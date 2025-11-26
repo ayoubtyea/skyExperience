@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
-import { Calendar, X, Phone, Mail, MapPin, User, Clock, DollarSign, Check } from 'lucide-react';
+import { Calendar, X, Phone, Mail, MapPin, User, Check } from 'lucide-react';
 import axios from 'axios';
 import API_BASE_URL from "../config/api";
 
 // Mock flight data - replace with actual props
 const mockFlight = {
   _id: '507f1f77bcf86cd799439011',
+  title: 'Private Hot-Air Balloon Flight in Marrakech',
   name: 'Private Hot-Air Balloon Flight in Marrakech',
   price: 450,
   location: 'Marrakech'
 };
 
+const MIN_TRAVELERS = 1;
+const MAX_TRAVELERS = 20;
+
 const FlightReservation = ({ flight = mockFlight }) => {
   const [showModal, setShowModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   // Calendar state
   const [currentDate, setCurrentDate] = useState(new Date()); // May 2025
@@ -34,7 +39,6 @@ const FlightReservation = ({ flight = mockFlight }) => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay() + 1); // Start from Monday
     
@@ -76,7 +80,7 @@ const FlightReservation = ({ flight = mockFlight }) => {
   };
 
   const calculateTotal = () => {
-    return flight.price * travelers;
+    return (flight.price || 0) * travelers;
   };
 
   const handleDateSelect = (date) => {
@@ -93,8 +97,22 @@ const FlightReservation = ({ flight = mockFlight }) => {
   };
 
   const handleSubmitReservation = async () => {
+    if (!selectedDate) {
+      setSubmitError('Please select a travel date before confirming.');
+      return;
+    }
+    if (travelers < MIN_TRAVELERS || travelers > MAX_TRAVELERS) {
+      setSubmitError(`Number of travelers must be between ${MIN_TRAVELERS} and ${MAX_TRAVELERS}.`);
+      return;
+    }
+    if (!formData.fullName || !formData.email || !formData.pickUpLocation) {
+      setSubmitError('Please fill in all required contact information.');
+      return;
+    }
+
     setLoading(true);
     try {
+      setSubmitError('');
       const reservationData = {
         date: selectedDate,
         travelers: travelers,
@@ -121,7 +139,10 @@ const FlightReservation = ({ flight = mockFlight }) => {
       setCurrentStep(4);
     } catch (error) {
       console.error('Reservation failed:', error);
-      alert('Reservation failed. Please try again.');
+      const apiError = error.response?.data?.errors?.[0]
+        || error.response?.data?.message
+        || 'Reservation failed. Please try again.';
+      setSubmitError(apiError);
     } finally {
       setLoading(false);
     }
@@ -137,19 +158,14 @@ const FlightReservation = ({ flight = mockFlight }) => {
       phoneNumber: '',
       pickUpLocation: ''
     });
+    setSubmitError('');
     setShowModal(false);
   };
 
-  const navigateToBookings = () => {
-    // REPLACE WITH YOUR NAVIGATION LOGIC:
-    // For React Router: navigate('/booking');
-    // For Next.js: router.push('/booking');
-    // For simple redirect:
-    window.location.href = '/booking';
-  };
-
-  const canContinueStep1 = selectedDate && travelers > 0;
+  const canContinueStep1 = selectedDate && travelers >= MIN_TRAVELERS && travelers <= MAX_TRAVELERS;
   const canContinueStep2 = formData.fullName && formData.email && formData.pickUpLocation;
+
+  const flightTitle = flight.title || flight.name || 'Selected Flight';
 
   return (
     <>
@@ -222,7 +238,7 @@ const FlightReservation = ({ flight = mockFlight }) => {
           <div className="bg-orange-50 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-2xl font-bold">{flight.title}</h2>
+              <h2 className="text-2xl font-bold">{flightTitle}</h2>
               <button 
                 onClick={resetModal}
                 className="text-gray-500 hover:text-gray-700"
@@ -328,19 +344,24 @@ const FlightReservation = ({ flight = mockFlight }) => {
                         <label className="block text-sm font-medium mb-2">Number of Travelers</label>
                         <div className="flex items-center gap-3">
                           <button 
-                            onClick={() => setTravelers(Math.max(1, travelers - 1))}
+                            onClick={() => setTravelers(prev => Math.max(MIN_TRAVELERS, prev - 1))}
                             className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                            disabled={travelers <= MIN_TRAVELERS}
                           >
                             -
                           </button>
                           <span className="font-bold text-lg w-8 text-center">{travelers}</span>
                           <button 
-                            onClick={() => setTravelers(travelers + 1)}
-                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                            onClick={() => setTravelers(prev => Math.min(MAX_TRAVELERS, prev + 1))}
+                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50"
+                            disabled={travelers >= MAX_TRAVELERS}
                           >
                             +
                           </button>
                         </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                          Up to {MAX_TRAVELERS} travelers per reservation.
+                        </p>
                       </div>
 
                       <div className="border-t pt-4 mb-6">
@@ -453,7 +474,7 @@ const FlightReservation = ({ flight = mockFlight }) => {
                     <button 
                       onClick={() => setCurrentStep(3)}
                       disabled={!canContinueStep2}
-                      className={`flex-1 py-3 rounded-lg font-bold transition ${
+                        className={`flex-1 py-3 rounded-lg font-bold transition ${
                         canContinueStep2 
                           ? 'bg-green-500 text-white hover:bg-green-600' 
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -473,7 +494,7 @@ const FlightReservation = ({ flight = mockFlight }) => {
                   <div className="bg-gray-50 p-6 rounded-lg space-y-4">
                     <div className="flex justify-between">
                       <span className="font-medium">Flight:</span>
-                      <span>{flight.name}</span>
+                      <span>{flightTitle}</span>
                     </div>
                     
                     <div className="flex justify-between">
@@ -521,13 +542,20 @@ const FlightReservation = ({ flight = mockFlight }) => {
                     >
                       Back
                     </button>
-                    <button 
-                      onClick={handleSubmitReservation}
-                      disabled={loading}
-                      className="flex-1 py-3 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 disabled:opacity-50"
-                    >
-                      {loading ? 'Processing...' : 'Confirm Booking'}
-                    </button>
+                    <div className="flex-1 flex flex-col gap-3">
+                      <button 
+                        onClick={handleSubmitReservation}
+                        disabled={loading}
+                        className="w-full py-3 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 disabled:opacity-50"
+                      >
+                        {loading ? 'Processing...' : 'Confirm Booking'}
+                      </button>
+                      {submitError && (
+                        <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3">
+                          {submitError}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

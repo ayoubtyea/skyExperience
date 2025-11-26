@@ -13,7 +13,9 @@ export default function HomePage() {
   useEffect(() => {
     const fetchHomepageFlights = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/flights/homepage`);
+        // Backend exposes GET /api/flights for the public flight list.
+        // Use that here instead of a non-existent /homepage endpoint.
+        const response = await axios.get(`${API_BASE_URL}/api/flights`);
         setFlights(response.data);
       } catch (error) {
         console.error("Error fetching homepage flights:", error);
