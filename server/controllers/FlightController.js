@@ -39,6 +39,12 @@ const uploadToCloudinary = (buffer, folder = 'flights') => {
   })
 }
 
+const calculateAverageRating = (reviews = []) => {
+  if (!reviews.length) return 0
+  const total = reviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0)
+  return Number((total / reviews.length).toFixed(1))
+}
+
 // Validate flight data
 const validateFlightData = (data, isUpdate = false) => {
   const errors = []
@@ -104,6 +110,8 @@ const validateFlightData = (data, isUpdate = false) => {
   return errors.length > 0 ? errors : null
 }
 
+const flightListFields = 'title overview mainImage price rating category images'
+
 // Public - get all flights
 export const getAllFlights = async (req, res) => {
   try {
@@ -112,6 +120,29 @@ export const getAllFlights = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Failed to get flights', error: error.message })
   }
+}
+
+const getSuggestedFlights = async (flightId, category) => {
+  const primarySuggestions = await Flight.find({
+    _id: { $ne: flightId },
+    category
+  })
+    .select(flightListFields)
+    .limit(3)
+
+  if (primarySuggestions.length >= 3) {
+    return primarySuggestions
+  }
+
+  const remaining = 3 - primarySuggestions.length
+  const secondarySuggestions = await Flight.find({
+    _id: { $ne: flightId },
+    category: { $ne: category }
+  })
+    .select(flightListFields)
+    .limit(remaining)
+
+  return [...primarySuggestions, ...secondarySuggestions]
 }
 
 // Get a single flight by ID
@@ -123,7 +154,9 @@ export const getFlightById = async (req, res) => {
     
     const flight = await Flight.findById(req.params.id).select('-reviews._id -program._id')
     if (!flight) return res.status(404).json({ message: 'Flight not found' })
-    res.json(flight)
+
+    const suggestedFlights = await getSuggestedFlights(flight._id, flight.category)
+    res.json({ flight, suggestedFlights })
   } catch (error) {
     res.status(500).json({ message: 'Failed to get flight', error: error.message })
   }
@@ -312,5 +345,87 @@ export const deleteFlight = async (req, res) => {
     res.json({ message: 'Flight deleted successfully' })
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete flight', error: error.message })
+  }
+}
+
+// Admin - add review
+export const addFlightReview = async (req, res) => {
+  try {
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid flight ID' })
+    }
+
+    const name = req.body.name?.trim() || ''
+    const avatar = req.body.avatar?.trim() || ''
+    const comment = req.body.comment?.trim() || ''
+    const rating = Number(req.body.rating)
+
+    const errors = []
+    if (!name || name.length < 2) errors.push('Name is required and must be at least 2 characters')
+    if (Number.isNaN(rating) || rating < 1 || rating > 5) errors.push('Rating must be between 1 and 5')
+    if (!comment || comment.length < 5) errors.push('Comment is required and must be at least 5 characters')
+
+    if (errors.length) {
+      return res.status(400).json({ message: 'Validation failed', errors })
+    }
+
+    const flight = await Flight.findById(id)
+    if (!flight) {
+      return res.status(404).json({ message: 'Flight not found' })
+    }
+
+    flight.reviews.push({
+      name,
+      avatar,
+      comment,
+      rating
+    })
+
+    flight.rating = calculateAverageRating(flight.reviews)
+    await flight.save()
+
+    const newReview = flight.reviews[flight.reviews.length - 1]
+
+    res.status(201).json({
+      message: 'Review added successfully',
+      review: newReview,
+      reviews: flight.reviews,
+      newRating: flight.rating
+    })
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to add review', error: error.message })
+  }
+}
+
+// Admin - delete review
+export const deleteFlightReview = async (req, res) => {
+  try {
+    const { id, reviewId } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(reviewId)) {
+      return res.status(400).json({ message: 'Invalid flight or review ID' })
+    }
+
+    const flight = await Flight.findById(id)
+    if (!flight) {
+      return res.status(404).json({ message: 'Flight not found' })
+    }
+
+    const reviewIndex = flight.reviews.findIndex(review => review._id.toString() === reviewId)
+    if (reviewIndex === -1) {
+      return res.status(404).json({ message: 'Review not found' })
+    }
+
+    flight.reviews.splice(reviewIndex, 1)
+    flight.rating = calculateAverageRating(flight.reviews)
+    await flight.save()
+
+    res.json({
+      message: 'Review deleted successfully',
+      reviews: flight.reviews,
+      newRating: flight.rating
+    })
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete review', error: error.message })
   }
 }

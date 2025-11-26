@@ -5,7 +5,9 @@ import {
   getFlightById,
   updateFlight,
   deleteFlight,
-  uploadFlightImages
+  uploadFlightImages,
+  addFlightReview,
+  deleteFlightReview
 } from '../controllers/FlightController.js'
 import { verifyToken } from '../middlewares/AuthMiddleware.js'
 
@@ -19,6 +21,8 @@ flightRoutes.get('/:id', getFlightById)
 flightRoutes.post('/', verifyToken, uploadFlightImages, createFlight)
 flightRoutes.put('/:id', verifyToken, uploadFlightImages, updateFlight)
 flightRoutes.delete('/:id', verifyToken, deleteFlight)
+flightRoutes.post('/:id/reviews', verifyToken, addFlightReview)
+flightRoutes.delete('/:id/reviews/:reviewId', verifyToken, deleteFlightReview)
 
 export default flightRoutes
 

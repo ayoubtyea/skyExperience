@@ -2,15 +2,26 @@ import Reservation from '../models/Reservation.js'
 import mongoose from 'mongoose'
 import Flight from '../models/Flight.js'
 
+const RESERVATION_STATUSES = ['pending', 'confirmed', 'cancelled']
+
 // Validate reservation data
 const validateReservationData = (data) => {
   const errors = []
   
   // Date validation
-  if (!data.date || !(data.date instanceof Date || !isNaN(new Date(data.date).getTime()))) {
+  const parsedDate = new Date(data.date)
+  if (!data.date || Number.isNaN(parsedDate.getTime())) {
     errors.push('Valid date is required')
-  } else if (new Date(data.date) < new Date()) {
-    errors.push('Reservation date cannot be in the past')
+  } else {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const reservationDay = new Date(parsedDate)
+    reservationDay.setHours(0, 0, 0, 0)
+
+    if (reservationDay < today) {
+      errors.push('Reservation date cannot be in the past')
+    }
   }
 
   // Travelers validation
@@ -49,52 +60,56 @@ const validateReservationData = (data) => {
     errors.push('Valid flight reference is required')
   }
 
+  // Status validation (optional)
+  if (data.status && !RESERVATION_STATUSES.includes(data.status)) {
+    errors.push(`Status must be one of: ${RESERVATION_STATUSES.join(', ')}`)
+  }
+
   return errors.length > 0 ? errors : null
 }
 
 // Create a new reservation (Public)
 export const createReservation = async (req, res) => {
   try {
+    const normalizedPayload = {
+      ...req.body,
+      travelers: Number(req.body.travelers),
+      total: Number(req.body.total)
+    }
+
     // Validate input data
-    const validationErrors = validateReservationData(req.body)
+    const validationErrors = validateReservationData(normalizedPayload)
     if (validationErrors) {
       return res.status(400).json({ message: 'Validation failed', errors: validationErrors })
     }
 
     // Verify flight exists
-    const flightExists = await Flight.exists({ _id: req.body.flight })
+    const flightExists = await Flight.exists({ _id: normalizedPayload.flight })
     if (!flightExists) {
       return res.status(400).json({ message: 'Referenced flight does not exist' })
     }
 
     // Prepare reservation data
     const reservationData = {
-      date: new Date(req.body.date),
-      travelers: req.body.travelers,
-      total: req.body.total,
-      fullName: req.body.fullName.trim(),
-      email: req.body.email.trim().toLowerCase(),
-      phoneNumber: req.body.phoneNumber ? req.body.phoneNumber.trim() : undefined,
-      pickUpLocation: req.body.pickUpLocation.trim(),
-      flight: req.body.flight
+      date: new Date(normalizedPayload.date),
+      travelers: normalizedPayload.travelers,
+      total: normalizedPayload.total,
+      fullName: normalizedPayload.fullName.trim(),
+      email: normalizedPayload.email.trim().toLowerCase(),
+      phoneNumber: normalizedPayload.phoneNumber ? normalizedPayload.phoneNumber.trim() : undefined,
+      pickUpLocation: normalizedPayload.pickUpLocation.trim(),
+      flight: normalizedPayload.flight,
+      status: normalizedPayload.status && RESERVATION_STATUSES.includes(normalizedPayload.status)
+        ? normalizedPayload.status
+        : 'pending'
     }
 
     // Create reservation
     const reservation = await Reservation.create(reservationData)
+    await reservation.populate('flight', 'title price mainImage category rating')
     
     // Return response without internal fields
-    res.status(201).json({
-      _id: reservation._id,
-      date: reservation.date,
-      travelers: reservation.travelers,
-      total: reservation.total,
-      fullName: reservation.fullName,
-      email: reservation.email,
-      phoneNumber: reservation.phoneNumber,
-      pickUpLocation: reservation.pickUpLocation,
-      flight: reservation.flight,
-      createdAt: reservation.createdAt
-    })
+    res.status(201).json(reservation)
   } catch (error) {
     res.status(400).json({ 
       message: 'Failed to create reservation', 
@@ -107,7 +122,7 @@ export const createReservation = async (req, res) => {
 export const getAllReservations = async (req, res) => {
   try {
     const reservations = await Reservation.find()
-      .populate('flight', 'title price') // Only include necessary flight fields
+      .populate('flight', 'title price mainImage category rating') // Only include necessary flight fields
       .select('-__v -updatedAt') // Exclude unnecessary fields
       .sort({ createdAt: -1 }) // Newest first
     
@@ -129,7 +144,7 @@ export const getReservationById = async (req, res) => {
     }
 
     const reservation = await Reservation.findById(req.params.id)
-      .populate('flight', 'title price mainImage') // Include needed flight fields
+      .populate('flight', 'title price mainImage category rating') // Include needed flight fields
       .select('-__v -updatedAt') // Exclude unnecessary fields
 
     if (!reservation) {
@@ -166,6 +181,46 @@ export const deleteReservation = async (req, res) => {
     res.status(500).json({ 
       message: 'Failed to delete reservation', 
       error: error.message 
+    })
+  }
+}
+
+// Update reservation status (Admin)
+export const updateReservationStatus = async (req, res) => {
+  try {
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid reservation ID' })
+    }
+
+    const { status } = req.body
+    if (!status || !RESERVATION_STATUSES.includes(status)) {
+      return res.status(400).json({
+        message: 'Invalid status value',
+        allowedStatuses: RESERVATION_STATUSES
+      })
+    }
+
+    const reservation = await Reservation.findById(id)
+      .populate('flight', 'title price mainImage category rating')
+      .select('-__v -updatedAt')
+
+    if (!reservation) {
+      return res.status(404).json({ message: 'Reservation not found' })
+    }
+
+    reservation.status = status
+    await reservation.save()
+
+    res.json({
+      message: 'Reservation status updated successfully',
+      success: true,
+      reservation
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to update reservation status',
+      error: error.message
     })
   }
 }
