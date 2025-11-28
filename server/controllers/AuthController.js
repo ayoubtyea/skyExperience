@@ -171,6 +171,8 @@ export const createAdmin = async (req, res) => {
     }
 
     const { username, email, password } = req.body;
+    
+    console.log('Creating admin with:', { username, email, passwordLength: password?.length });
 
     // Check if username or email already exists
     const existingUser = await User.findOne({ 
@@ -211,9 +213,33 @@ export const createAdmin = async (req, res) => {
 
   } catch (error) {
     console.error('Admin creation error:', error);
+    
+    // Handle specific MongoDB errors
+    if (error.code === 11000) {
+      // Duplicate key error
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({
+        success: false,
+        message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`,
+        field: field
+      });
+    }
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors
+      });
+    }
+    
+    // Return detailed error in development, generic in production
     return res.status(500).json({
       success: false,
-      message: 'Failed to create admin account'
+      message: 'Failed to create admin account',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };

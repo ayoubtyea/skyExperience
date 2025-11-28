@@ -11,6 +11,17 @@ import reservationRoutes from './routes/Reservations.js';
 import flightRoutes from './routes/Flights.js';
 import dashboardRoutes from './routes/Dashboard.js';
 
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Promise Rejection:', err);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -23,9 +34,15 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
       return callback(null, true);
     }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    // Log the blocked origin for debugging
+    console.warn(`CORS: Blocked origin ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
     return callback(new Error(`CORS: Origin ${origin} not allowed`));
   },
   methods: ['GET','POST','PUT','PATCH','DELETE'],
@@ -41,9 +58,21 @@ app.use('/api/flights', flightRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  if (err.message.includes('CORS')) {
+    return res.status(403).json({ message: err.message });
+  }
+  res.status(500).json({ message: 'Internal server error', error: err.message });
+});
 
-connectDB();
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Connect to database and start server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}).catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
 });
