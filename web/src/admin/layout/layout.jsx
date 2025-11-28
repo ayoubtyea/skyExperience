@@ -21,6 +21,9 @@ const Layout = () => {
   const currentPath = location.pathname;
 
   const handleLogout = () => {
+    // Remove token from localStorage
+    localStorage.removeItem('jwt_token');
+    // Remove cookie if it exists
     Cookies.remove("jwt", { path: "/" });
     window.location.href = '/login';
   };

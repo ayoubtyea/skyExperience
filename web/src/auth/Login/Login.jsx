@@ -30,6 +30,11 @@ const Login = () => {
       const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData, {withCredentials: true});
       
       if (response.data.success) {
+        // Store token in localStorage for client-side checks
+        // The HTTP-only cookie will be sent automatically with requests
+        if (response.data.token) {
+          localStorage.setItem('jwt_token', response.data.token);
+        }
 
         // Redirect to admin dashboard
         window.location.href = '/admin';

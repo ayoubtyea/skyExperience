@@ -23,7 +23,9 @@ import DetailsFlight from './pages/DetailsFlight/DetailsFlight';
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
-  const token = Cookies.get("jwt");
+  // Check for token in localStorage (set by login) or cookie
+  // HTTP-only cookies can't be read by JS, so we use localStorage
+  const token = localStorage.getItem('jwt_token') || Cookies.get("jwt");
 
   useEffect(() => {
     if (!token) {
