@@ -71,16 +71,24 @@ const validateReservationData = (data) => {
 // Create a new reservation (Public)
 export const createReservation = async (req, res) => {
   try {
+    console.log('Received reservation data:', req.body);
+    
     const normalizedPayload = {
       ...req.body,
       travelers: Number(req.body.travelers),
       total: Number(req.body.total)
     }
 
+    console.log('Normalized payload:', normalizedPayload);
+
     // Validate input data
     const validationErrors = validateReservationData(normalizedPayload)
     if (validationErrors) {
-      return res.status(400).json({ message: 'Validation failed', errors: validationErrors })
+      console.log('Validation errors:', validationErrors);
+      return res.status(400).json({ 
+        message: 'Validation failed', 
+        errors: validationErrors 
+      })
     }
 
     // Verify flight exists
@@ -96,13 +104,17 @@ export const createReservation = async (req, res) => {
       total: normalizedPayload.total,
       fullName: normalizedPayload.fullName.trim(),
       email: normalizedPayload.email.trim().toLowerCase(),
-      phoneNumber: normalizedPayload.phoneNumber ? normalizedPayload.phoneNumber.trim() : undefined,
+      phoneNumber: normalizedPayload.phoneNumber && normalizedPayload.phoneNumber.trim() 
+        ? normalizedPayload.phoneNumber.trim() 
+        : undefined,
       pickUpLocation: normalizedPayload.pickUpLocation.trim(),
       flight: normalizedPayload.flight,
       status: normalizedPayload.status && RESERVATION_STATUSES.includes(normalizedPayload.status)
         ? normalizedPayload.status
         : 'pending'
     }
+    
+    console.log('Prepared reservation data:', reservationData);
 
     // Create reservation
     const reservation = await Reservation.create(reservationData)
