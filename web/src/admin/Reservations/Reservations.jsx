@@ -172,11 +172,54 @@ const AdminReservations = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      console.log(formData)
+      setError(null);
+      
+      // Recalculate total if needed
+      let calculatedTotal = formData.total;
+      if (formData.flight && formData.travelers) {
+        const selectedFlight = flights.find(f => f._id === formData.flight);
+        if (selectedFlight && (!calculatedTotal || calculatedTotal === 0)) {
+          calculatedTotal = selectedFlight.price * formData.travelers;
+        }
+      }
+      
+      // Validate required fields
+      if (!formData.date || !formData.fullName || !formData.email || !formData.pickUpLocation || !formData.flight) {
+        setError('Please fill in all required fields');
+        setLoading(false);
+        return;
+      }
+      
+      if (calculatedTotal <= 0) {
+        setError('Total price must be greater than 0. Please select a flight and number of travelers.');
+        setLoading(false);
+        return;
+      }
+      
+      // Prepare data for API - ensure all required fields are present
+      const reservationData = {
+        date: formData.date,
+        travelers: Number(formData.travelers),
+        total: calculatedTotal,
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phoneNumber: formData.phoneNumber ? formData.phoneNumber.trim() : '',
+        pickUpLocation: formData.pickUpLocation.trim(),
+        flight: formData.flight,
+        status: formData.status || 'pending'
+      };
+
+      console.log('Sending reservation data:', reservationData);
+      
       const response = await axios.post(
         `${API_BASE_URL}/api/reservations`,
-        formData,
-        { withCredentials: true }
+        reservationData,
+        { 
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
       
       if (response.data) {
@@ -198,7 +241,10 @@ const AdminReservations = () => {
       }
     } catch (error) {
       console.error('Error creating reservation:', error);
-      setError('Failed to create reservation: ' + (error.response?.data?.message || error.message));
+      const errorMessage = error.response?.data?.errors 
+        ? `Validation failed: ${error.response.data.errors.join(', ')}`
+        : error.response?.data?.message || error.message || 'Failed to create reservation';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -549,7 +595,10 @@ const AdminReservations = () => {
             <div className="sticky top-0 bg-white border-b border-[#eec09a]/30 p-6 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-[#b94c2a]">Create New Reservation</h2>
               <button
-                onClick={() => setShowCreateModal(false)}
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setError(null);
+                }}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X className="text-[#b94c2a]" size={24} />
@@ -558,6 +607,21 @@ const AdminReservations = () => {
 
             {/* Modal Content */}
             <form onSubmit={createReservation} className="p-6 space-y-6">
+              {/* Error Message in Modal */}
+              {error && (
+                <div className="mb-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded-lg">
+                  <div className="font-semibold mb-1">Error creating reservation:</div>
+                  <div className="text-sm">{error}</div>
+                  <button 
+                    type="button"
+                    onClick={() => setError(null)} 
+                    className="mt-2 text-red-800 font-bold text-sm underline"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              )}
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-lg font-semibold text-[#b94c2a] mb-4 flex items-center gap-2">
