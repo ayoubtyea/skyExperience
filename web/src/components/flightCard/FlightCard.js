@@ -45,7 +45,8 @@ export default function FlightCard({
   category
 }) {
   return (
-    <div className="flex flex-col p-8 gap-8 w-full bg-[#eec09a] rounded-2xl max-w-full md:max-w-none">
+    <div className="flex flex-col p-8 gap-8 w-full rounded-2xl max-w-full md:max-w-none"
+    style={{backgroundColor: '#EEC09A'}}>
       {/* Title at the very top */}
       <div className="flex justify-between items-start w-full">
         <div>
