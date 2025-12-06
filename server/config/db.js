@@ -5,6 +5,10 @@ const DEFAULT_LOCAL_URI = 'mongodb://127.0.0.1:27017/skyexp';
 const connectDB = async () => {
   let connectionUri = process.env.DATABASE_URL || DEFAULT_LOCAL_URI;
   
+  if (connectionUri) {
+    connectionUri = connectionUri.trim().replace(/^["']|["']$/g, '');
+  }
+  
   // If using MongoDB Atlas and database name is missing, add it
   if (connectionUri.includes('mongodb+srv://') || connectionUri.includes('mongodb://')) {
     // Split URI and query string
@@ -40,27 +44,44 @@ const connectDB = async () => {
   }
   
   try {
+    console.log('🔌 Attempting to connect to MongoDB...');
+    const maskedUri = connectionUri.replace(/\/\/[^:]+:[^@]+@/, '//***:***@');
+    console.log('📍 Connection string:', maskedUri);
+    
     await mongoose.connect(connectionUri, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
     });
     const { host, name } = mongoose.connection;
-    console.log(`MongoDB connected successfully → ${host}/${name}`);
+    console.log(`✅ MongoDB connected successfully → ${host}/${name}`);
   } catch (error) {
     console.error('❌ Database connection failed');
     console.error('Error:', error.message);
+    console.error('Error code:', error.code);
     
-    if (error.message.includes('IP')) {
-      console.error('\n💡 Tip: Your IP address may not be whitelisted in MongoDB Atlas.');
-      console.error('   Go to: https://www.mongodb.com/docs/atlas/security-whitelist/');
-      console.error('   Or whitelist 0.0.0.0/0 to allow all IPs (less secure)');
-    } else if (error.message.includes('authentication')) {
-      console.error('\n💡 Tip: Check your MongoDB Atlas username and password');
+    const maskedUri = connectionUri.replace(/\/\/[^:]+:[^@]+@/, '//***:***@');
+    console.error('\n📍 Tried connection string:', maskedUri);
+    
+    if (error.message.includes('IP') || error.message.includes('whitelist') || error.code === 'ENOTFOUND') {
+      console.error('\n💡 IP Whitelist Issue Detected:');
+      console.error('   1. Go to: https://cloud.mongodb.com');
+      console.error('   2. Navigate to: Network Access (left sidebar)');
+      console.error('   3. Click: "Add IP Address"');
+      console.error('   4. Click: "Allow Access from Anywhere" (adds 0.0.0.0/0)');
+      console.error('   5. Wait 1-2 minutes for changes to propagate');
+      console.error('   6. Restart your Render service');
+    } else if (error.message.includes('authentication') || error.message.includes('bad auth')) {
+      console.error('\n💡 Authentication Issue:');
+      console.error('   - Check your MongoDB Atlas username and password');
+      console.error('   - Verify credentials in Render environment variables');
+      console.error('   - Make sure DATABASE_URL has correct username:password');
     } else if (error.message.includes('ENOTFOUND') || error.message.includes('getaddrinfo')) {
-      console.error('\n💡 Tip: Check your internet connection and MongoDB Atlas cluster status');
+      console.error('\n💡 Network/DNS Issue:');
+      console.error('   - Check your MongoDB Atlas cluster status');
+      console.error('   - Verify the cluster hostname in your connection string');
+      console.error('   - Ensure your cluster is not paused');
     }
     
-    console.error('\nTried connection string:', connectionUri.replace(/\/\/[^:]+:[^@]+@/, '//***:***@'));
     console.error('\n💡 Alternative: Use local MongoDB by setting DATABASE_URL to mongodb://127.0.0.1:27017/skyexp');
     process.exit(1);
   }
