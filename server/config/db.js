@@ -3,10 +3,25 @@ import mongoose from 'mongoose';
 const DEFAULT_LOCAL_URI = 'mongodb://127.0.0.1:27017/skyexp';
 
 const connectDB = async () => {
-  let connectionUri = process.env.DATABASE_URL || DEFAULT_LOCAL_URI;
+  let connectionUri = process.env.DATABASE_URL;
   
-  if (connectionUri) {
+  if (!connectionUri || connectionUri.trim() === '') {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('❌ DATABASE_URL environment variable is not set!');
+      console.error('   This is required in production. Please set DATABASE_URL in Render environment variables.');
+      console.error('   Go to: Render Dashboard → Your Service → Environment → Add DATABASE_URL');
+      process.exit(1);
+    }
+    console.warn('⚠️  DATABASE_URL not set, using local MongoDB fallback');
+    connectionUri = DEFAULT_LOCAL_URI;
+  } else {
     connectionUri = connectionUri.trim().replace(/^["']|["']$/g, '');
+  }
+  
+  if (connectionUri === DEFAULT_LOCAL_URI && process.env.NODE_ENV === 'production') {
+    console.error('❌ Cannot use local MongoDB (127.0.0.1:27017) in production!');
+    console.error('   Please set DATABASE_URL to your MongoDB Atlas connection string in Render.');
+    process.exit(1);
   }
   
   // If using MongoDB Atlas and database name is missing, add it
@@ -62,7 +77,18 @@ const connectDB = async () => {
     const maskedUri = connectionUri.replace(/\/\/[^:]+:[^@]+@/, '//***:***@');
     console.error('\n📍 Tried connection string:', maskedUri);
     
-    if (error.message.includes('IP') || error.message.includes('whitelist') || error.code === 'ENOTFOUND') {
+    if (error.code === 'ECONNREFUSED' || error.message.includes('ECONNREFUSED')) {
+      console.error('\n💡 Connection Refused - DATABASE_URL Issue:');
+      console.error('   The app is trying to connect to local MongoDB (127.0.0.1:27017)');
+      console.error('   This means DATABASE_URL is not set or is empty in Render.');
+      console.error('\n   Fix:');
+      console.error('   1. Go to: Render Dashboard → Your Service → Environment');
+      console.error('   2. Add/Edit DATABASE_URL environment variable');
+      console.error('   3. Set it to your MongoDB Atlas connection string:');
+      console.error('      mongodb+srv://username:password@cluster.mongodb.net/skyexp?appName=SkyExperience');
+      console.error('   4. Make sure there are NO quotes around the value');
+      console.error('   5. Save and redeploy');
+    } else if (error.message.includes('IP') || error.message.includes('whitelist') || error.code === 'ENOTFOUND') {
       console.error('\n💡 IP Whitelist Issue Detected:');
       console.error('   1. Go to: https://cloud.mongodb.com');
       console.error('   2. Navigate to: Network Access (left sidebar)');
