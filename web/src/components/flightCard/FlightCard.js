@@ -1,6 +1,7 @@
 import { StarIcon } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Helper function to get appropriate icons for program items
 const getProgramIcon = (miniTitle) => {
@@ -35,15 +36,17 @@ const getProgramIcon = (miniTitle) => {
 };
 
 export default function FlightCard({
-  mainImage, // Changed from imageSrc to mainImage
+  mainImage,
   title,
   price,
-  program = [], // Changed from features to program
-  buttonText = 'Book now',
+  program = [],
+  buttonText,
   imageLink,
   rating,
   category
 }) {
+  const { t } = useTranslation();
+  const displayButtonText = buttonText || t("flightCard.bookNow");
   return (
     <div className="flex flex-col p-8 gap-8 w-full rounded-2xl max-w-full md:max-w-none"
     style={{backgroundColor: '#EEC09A'}}>
@@ -60,7 +63,7 @@ export default function FlightCard({
           )}
         </div>
         <span className="text-lg font-bold text-black">
-          Price: <span className="text-[#b94c2a] text-2xl">${price}</span>
+          {t("flightCard.price")} <span className="text-[#b94c2a] text-2xl">${price}</span>
         </span>
       </div>
 
@@ -130,7 +133,7 @@ export default function FlightCard({
               to={imageLink || "/booking"} 
               className="bg-[#b94c2a] hover:scale-110 transition-all duration-300 hover:bg-orange-600 text-white px-8 py-3 rounded-md font-bold text-lg uppercase tracking-wider shadow-lg"
             >
-              {buttonText}
+              {displayButtonText}
             </Link>
           </div>
         </div>

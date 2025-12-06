@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const useOnScreen = (ref, threshold = 0.3) => {
   const [isIntersecting, setIntersecting] = useState(false);
@@ -20,6 +21,7 @@ const useOnScreen = (ref, threshold = 0.3) => {
 };
 
 const PanoramicSection = () => {
+  const { t } = useTranslation();
   const [isActive, setIsActive] = useState(false);
   const [showSmallImages, setShowSmallImages] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -67,7 +69,7 @@ const PanoramicSection = () => {
           className={`text-center ${isActive ? 'pointer-events-none' : ''}`}
           style={{ marginBottom: isActive ? '0' : '2rem' }}
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold">Panoramic Views</h2>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold">{t("section.panoramicViews")}</h2>
         </motion.div>
 
         <div className="relative h-[350px] sm:h-[380px] md:h-[450px]">
@@ -98,11 +100,10 @@ const PanoramicSection = () => {
                     transition={{ duration: 0.4 }}
                     className="pr-0 md:pr-8 absolute top-0 left-0 w-full md:w-auto"
                   >
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-3 md:mb-4 text-center md:text-left">Panoramic Views</h2>
-                    <h3 className="text-xl font-bold mb-3 md:mb-4 text-center md:text-left">Marrakech from Above</h3>
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-3 md:mb-4 text-center md:text-left">{t("section.panoramicViews")}</h2>
+                    <h3 className="text-xl font-bold mb-3 md:mb-4 text-center md:text-left">{t("section.marrakechFromAbove")}</h3>
                     <p className="text-base md:text-lg text-black/80 mb-4 md:mb-6 max-w-md mx-auto md:mx-0 text-center md:text-left">
-                      Soar over the Red City and beyond in our safe and comfortable hot-air balloons. 
-                      Each flight is a new masterpiece painted by the sky.
+                      {t("section.description")}
                     </p>
                     
                     <div className="flex justify-center md:justify-start gap-4 md:gap-6">

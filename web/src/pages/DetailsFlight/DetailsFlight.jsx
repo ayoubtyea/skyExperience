@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "../../App.css";
 import AnimatedCard from "../../components/flightCard";
 import axios from "axios";
@@ -8,6 +9,7 @@ import { StarIcon } from "lucide-react";
 import FlightReservation from "../../components/FlightReservation";
 
 const DetailsFlight = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [flight, setFlight] = useState(null);
   const [suggestedFlights, setSuggestedFlights] = useState([]);
@@ -27,7 +29,6 @@ const DetailsFlight = () => {
       } catch (err) {
         setError(err.message);
         setLoading(false);
-        console.log(err);
       }
     };
 
@@ -37,7 +38,7 @@ const DetailsFlight = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#ecd3bb] flex items-center justify-center">
-        <div className="text-xl">Loading flight details...</div>
+        <div className="text-xl">{t("detailsFlight.loadingDetails")}</div>
       </div>
     );
   }
@@ -45,7 +46,7 @@ const DetailsFlight = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-[#ecd3bb] flex items-center justify-center">
-        <div className="text-xl text-red-500">Error: {error}</div>
+        <div className="text-xl text-red-500">{t("detailsFlight.error")} {error}</div>
       </div>
     );
   }
@@ -53,20 +54,11 @@ const DetailsFlight = () => {
   if (!flight) {
     return (
       <div className="min-h-screen bg-[#ecd3bb] flex items-center justify-center">
-        <div className="text-xl">Flight not found</div>
+        <div className="text-xl">{t("detailsFlight.flightNotFound")}</div>
       </div>
     );
   }
 
-  // Function to get category badge text
-  const getCategoryBadge = (category) => {
-    switch(category) {
-      case 'vip': return 'VIP';
-      case 'romantic offer': return 'Romantic';
-      case 'most reserved': return 'Most Reserved';
-      default: return category;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#ecd3bb] flex flex-col items-center">
@@ -110,15 +102,15 @@ const DetailsFlight = () => {
                 onClick={() => setMainImg(flight.mainImage)}
                 className="absolute top-2 left-2 bg-white/80 hover:bg-white text-gray-800 font-medium py-1 px-3 rounded-lg text-sm transition-all"
               >
-                ← Back to main
+                {t("detailsFlight.backToMain")}
               </button>
             )}
           </div>
           
-          <h3 className="text-lg md:text-xl font-bold mb-2">🗓️ Réservation</h3>
+          <h3 className="text-lg md:text-xl font-bold mb-2">{t("detailsFlight.reservation")}</h3>
           <ul className="list-disc pl-6 text-base md:text-lg text-black/80 mb-4">
-            <li>Minimum 7 jours à l'avance</li>
-            <li>Offre valable toute l'année, sous réserve des conditions météo</li>
+            <li>{t("detailsFlight.minDays")}</li>
+            <li>{t("detailsFlight.validYear")}</li>
           </ul>
         </div>
         
@@ -129,7 +121,7 @@ const DetailsFlight = () => {
       {/* Bloc Reviews + Program + Overview */}
       <div className="w-full max-w-6xl mx-auto mt-12 px-4">
         {/* Reviews */}
-        <h2 className="text-2xl md:text-3xl font-extrabold mb-6">Reviews</h2>
+        <h2 className="text-2xl md:text-3xl font-extrabold mb-6">{t("detailsFlight.reviews")}</h2>
         <div className="flex flex-col md:flex-row gap-6 mb-12">
           {flight.reviews.map((review, index) => (
             <div key={index} className="flex-1 bg-white rounded-2xl shadow-lg p-5 flex flex-col gap-2 min-w-[220px]">
@@ -161,7 +153,7 @@ const DetailsFlight = () => {
         </div>
         
         {/* Program */}
-        <h2 className="text-3xl font-extrabold mb-4">🎁 Pack Inclus</h2>
+        <h2 className="text-3xl font-extrabold mb-4">{t("detailsFlight.packIncluded")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {flight.program.map((item, index) => (
             <div key={index} className="bg-white rounded-2xl shadow-lg p-6">
@@ -172,7 +164,7 @@ const DetailsFlight = () => {
         </div>
         
         {/* Overview */}
-        <h2 className="text-3xl font-extrabold mb-4">Overview</h2>
+        <h2 className="text-3xl font-extrabold mb-4">{t("detailsFlight.overview")}</h2>
         <div className="text-base md:text-lg text-black/90 mb-6 max-w-3xl">
           <p>{flight.overview}</p>
         </div>
@@ -186,14 +178,14 @@ const DetailsFlight = () => {
               />
             ))}
           </span>
-          <span className="text-black/80">({flight.totalReviews} reviews)</span>
+          <span className="text-black/80">({flight.totalReviews} {t("detailsFlight.reviewsCount")})</span>
         </div>
       </div>
       
       {/* FLIGHT suggestion section */}
       <div className="w-full max-w-6xl mx-auto mb-0 px-4">
         <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-8">
-          FLIGHT suggestion
+          {t("detailsFlight.flightSuggestion")}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 justify-items-center">

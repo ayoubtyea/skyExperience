@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import FlightCard from "../../components/flightCard/FlightCard";
 import PanoramicSection from "../../components/section";
 import axios from "axios";
@@ -7,6 +8,7 @@ import API_BASE_URL from "../../config/api";
 import { Phone } from "lucide-react";
 
 export default function HomePage() {
+  const { t } = useTranslation();
     const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +35,7 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/landing.png')" }}>
         <div className="flex items-center justify-center h-screen">
-          <div className="text-white text-xl">Loading flights...</div>
+          <div className="text-white text-xl">{t("home.loadingFlights")}</div>
         </div>
       </div>
     );
@@ -47,7 +49,7 @@ export default function HomePage() {
                 {/* Heading in center */}
                 <div className="flex-1 flex items-center justify-center">
                   <h1 className="text-3xl md:text-5xl font-bold text-black drop-shadow-xl">
-                    Soar Above Marrakech in Hot Air Balloon
+                    {t("home.heroTitle")}
                   </h1>
                 </div>
 
@@ -56,7 +58,7 @@ export default function HomePage() {
                   to="/booking"
                   className="bg-[#a43518] hover:bg-orange-600 hover:scale-110 transition-all duration-300 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider shadow-lg"
                 >
-                  BOOK YOUR FLIGHT NOW
+                  {t("home.bookFlight")}
                 </Link>
               </div>
             </main>
@@ -65,7 +67,7 @@ export default function HomePage() {
                   {/* Our Flights Section - Dynamic */}
       <section id="flight" className="w-full bg-[#ded1c7] py-12">
         <div className="max-w-5xl mx-auto rounded-2xl p-8 md:p-12 flex flex-col gap-12">
-          <h2 className="text-6xl font-extrabold text-center mb-6 text-[#2c2c2c]">Our Flights</h2>
+          <h2 className="text-6xl font-extrabold text-center mb-6 text-[#2c2c2c]">{t("home.ourFlights")}</h2>
           
           {/* Navigation buttons - dynamically generated from available flights */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -108,8 +110,8 @@ export default function HomePage() {
             {/* Section Trusted by */}
             <section className="w-full bg-[#faf9e6] py-12">
               <div className="max-w-4xl mx-auto flex flex-col items-center">
-                <h2 className="text-4xl font-serif font-semibold text-center mb-4">Trusted by</h2>
-                <p className="text-lg text-center mb-8 font-serif">With award winning services we are trusted many companies</p>
+                <h2 className="text-4xl font-serif font-semibold text-center mb-4">{t("home.trustedBy")}</h2>
+                <p className="text-lg text-center mb-8 font-serif">{t("home.trustedBySubtitle")}</p>
                 <div className="flex flex-wrap justify-center items-center gap-10 md:gap-16">
                   <img src="/images/airbnb.png" alt="airbnb" className="h-12 object-contain" style={{minWidth:'80px'}} />
                   <img src="/images/Booking.png" alt="Booking.com" className="h-10 object-contain" style={{minWidth:'120px'}} />
@@ -125,8 +127,8 @@ export default function HomePage() {
             {/* Section Client's Testimonials */}
             <section className="w-full bg-[#e8ded6] py-16">
               <div className="max-w-6xl mx-auto px-4">
-                <h2 className="text-5xl font-extrabold text-white text-center mb-2">Client's Testimonials</h2>
-                <p className="text-2xl text-[#eaeaea] text-center mb-12">Providing The Best Services For Our Customers</p>
+                <h2 className="text-5xl font-extrabold text-white text-center mb-2">{t("home.testimonials")}</h2>
+                <p className="text-2xl text-[#eaeaea] text-center mb-12">{t("home.testimonialsSubtitle")}</p>
                 <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
                   {/* Témoignage 1 */}
                   <div className="bg-white rounded-2xl hover:scale-110 transition-all duration-300 shadow-lg p-6 flex-1 max-w-sm mx-auto flex flex-col gap-2 transform rotate-[-3deg]">
@@ -190,13 +192,13 @@ export default function HomePage() {
                 </div>
                 {/* Contenu à droite */}
                 <div className="w-full md:w-1/2 flex flex-col justify-center items-start gap-6">
-                  <h2 className="text-3xl md:text-4xl font-extrabold text-[#f97316] mb-2">ABOUT US</h2>
+                  <h2 className="text-3xl md:text-4xl font-extrabold text-[#f97316] mb-2">{t("home.aboutUs")}</h2>
                   <div className="text-gray-800 text-base md:text-lg leading-relaxed">
-                    <strong>Sky Experience, More Than Just a Flight</strong><br/>
-                    A hot-air balloon ride is much more than a simple journey. Sky Experience turns this aerial adventure into an unforgettable moment. Watch the sun rise over the Atlas Mountains, lush oases, and expansive palm groves surrounding the city. A truly unique view awaits, offering you a bird's-eye view of Marrakech's natural beauty.
+                    <strong>{t("home.aboutUsTitle")}</strong><br/>
+                    {t("home.aboutUsDescription")}
                   </div>
                   <div className="flex items-center gap-4 mt-2">
-                    <a href="/about" className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-bold transition-colors">Check details</a>
+                    <a href="/about" className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-bold transition-colors">{t("home.checkDetails")}</a>
                     {/* Icône téléphone SVG */}
                     <div className="flex items-center gap-3">
                       <a href="tel:+212661445327" className="text-gray-800 font-medium hover:text-orange-500 transition">

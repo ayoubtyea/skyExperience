@@ -1,8 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "../../App.css";
 
 const About = () => {
+  const { t } = useTranslation();
   return (
     <div  className="overflow-hidden" style={{ background: "#EAD8C0", minHeight: "100vh", width: '100%' }}>
       <div style={{ position: "relative", maxWidth: 1200, margin: "0 auto", padding: "48px 20px 0 20px" }}>
@@ -39,7 +40,7 @@ const About = () => {
           position: "relative",
           zIndex: 1
         }}>
-          ABOUT US
+          {t("about.title")}
         </h1>
         <img
           src="/images/aboutus.png"
@@ -61,15 +62,15 @@ const About = () => {
           {/* Texte gauche */}
           <div className="about-text">
             <h2 style={{ fontWeight: "bold", fontSize: "2.0rem" }}>
-              Live a Unique Hot-Air Balloon Adventure<br />with Sky Experience!
+              {t("about.adventureTitle")}
             </h2>
             <h3 style={{ marginTop: 16, fontWeight: "bold", fontSize: "1.1rem" }}>
-              The Sky Experience Adventures
+              {t("about.adventureSubtitle")}
             </h3>
             <ul style={{ marginTop: 10, marginBottom: 30, paddingLeft: 20 }}>
-              <li>Soar above Marrakech and its breathtaking landscapes in the comfort of our modern hot-air balloons.</li>
-              <li>Give yourself the gift of serenity and enjoy an unforgettable view of the Atlas Mountains, the palm groves of Marrakech, and much more.</li>
-              <li>Every detail has been carefully thought out to make this experience unforgettable.</li>
+              <li>{t("about.adventurePoint1")}</li>
+              <li>{t("about.adventurePoint2")}</li>
+              <li>{t("about.adventurePoint3")}</li>
             </ul>
           </div>
 
@@ -86,15 +87,15 @@ const About = () => {
           {/* Texte gauche */}
           <div className="about-text">
             <h2 style={{ fontWeight: "bold", fontSize: "2.4rem", marginBottom: 0 }}>
-              Safety and Comfort: Our Priorities
+              {t("about.safetyTitle")}
             </h2>
             <h3 style={{ fontWeight: "bold", fontSize: "1.3rem", margin: "18px 0 10px 0" }}>
-              Safety first always
+              {t("about.safetySubtitle")}
             </h3>
             <ul style={{ marginTop: 10, paddingLeft: 20 }}>
-              <li>At Sky Experience, safety is our top priority.</li>
-              <li>Our certified, experienced pilots will guide you throughout the adventure, ensuring you enjoy a safe and comfortable flight.</li>
-              <li>We provide perfectly maintained hot-air balloons, tailored to meet your needs, guaranteeing both safety and comfort.</li>
+              <li>{t("about.safetyPoint1")}</li>
+              <li>{t("about.safetyPoint2")}</li>
+              <li>{t("about.safetyPoint3")}</li>
             </ul>
           </div>
           {/* Images droite sous forme de bloc vertical */}
@@ -116,14 +117,14 @@ const About = () => {
           {/* Texte à droite */}
           <div className="about-text">
             <h2 style={{ color: "#2C2C2C", fontWeight: "bold", fontSize: "2rem", marginBottom: 20 }}>
-              A Flight Tailored to Your Expectations
+              {t("about.expectationsTitle")}
             </h2>
             <ul style={{ color: "#2C2C2C", fontSize: "1.1rem", lineHeight: 1.6 }}>
               <li style={{ marginBottom: 12 }}>
-                Whether you choose a classic or private flight, every experience is carefully planned to give you a panoramic view of Marrakech like you've never seen before.
+                {t("about.expectationsPoint1")}
               </li>
               <li>
-                Every moment in the air invites you to relax and fully appreciate the stunning beauty of the landscapes around you.
+                {t("about.expectationsPoint2")}
               </li>
             </ul>
           </div>
@@ -133,15 +134,15 @@ const About = () => {
           <div className="about-relax-bg"></div>
           <div className="about-relax-overlay"></div>
           <div className="about-relax-content "> 
-            <h2 style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#fff', textShadow: '0 2px 8px #0007' }}>A Moment of Relaxation and Wonder</h2>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#fff', textShadow: '0 2px 8px #0007' }}>{t("about.relaxationTitle")}</h2>
             <p style={{ color: '#fff', fontSize: '1.15rem', marginTop: 12 }}>
-              A hot-air balloon ride is a rare and peaceful experience, perfect for relaxation and awe.
+              {t("about.relaxationPoint1")}
             </p>
             <p style={{ color: '#fff', fontSize: '1.15rem' }}>
-              Step into a spacious and comfortable balloon and let yourself drift away on the gentle breeze.
+              {t("about.relaxationPoint2")}
             </p>
             <p style={{ color: '#fff', fontSize: '1.15rem' }}>
-              Experience the tranquility of flight as you take in the ever-changing scenery below.
+              {t("about.relaxationPoint3")}
             </p>
           </div>
         </div>
@@ -155,19 +156,19 @@ const About = () => {
         <section style={{ padding: '56px 0 0 0', margin: '0 -20px 48px -20px', borderRadius: 32 }}>
           <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px' }}>
             <h2 style={{ fontWeight: 'bold', fontSize: '2.2rem', color: '#222', marginBottom: 8, textAlign: 'center', letterSpacing: '-1px' }}>
-              Our Commitments: A Worry-Free Experience
+              {t("about.commitmentsTitle")}
             </h2>
-            <div style={{ fontSize: '1.1rem', color: '#a43518', fontWeight: 600, marginBottom: 24, textAlign: 'center' }}>Relax, we handle every detail for you</div>
+            <div style={{ fontSize: '1.1rem', color: '#a43518', fontWeight: 600, marginBottom: 24, textAlign: 'center' }}>{t("about.commitmentsSubtitle")}</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ flex: 1, minWidth: 260 }}>
                 <p style={{ color: '#222', fontSize: '1.13rem', marginBottom: 14, lineHeight: 1.7 }}>
-                  From reservation to landing, we've taken care of everything so you can fully relax and enjoy the moment. We handle all the logistics—transport, welcoming, safety briefings, and personalized souvenirs at the end of your adventure. All you have to do is focus on what matters: enjoying the experience.
+                  {t("about.commitmentsDescription")}
                 </p>
                 <ul style={{ color: '#444', fontSize: '1.05rem', marginLeft: 18, marginBottom: 0, lineHeight: 1.6 }}>
-                  <li>Easy booking and clear communication</li>
-                  <li>Warm welcome and professional team</li>
-                  <li>Safety briefings and certified pilots</li>
-                  <li>Personalized souvenirs and memories</li>
+                  <li>{t("about.commitmentsPoint1")}</li>
+                  <li>{t("about.commitmentsPoint2")}</li>
+                  <li>{t("about.commitmentsPoint3")}</li>
+                  <li>{t("about.commitmentsPoint4")}</li>
                 </ul>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minWidth: 260 }}>

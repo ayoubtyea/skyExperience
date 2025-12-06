@@ -1,8 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import API_BASE_URL from '../../config/api';
 
 export default function BookingPage() {
+  const { t } = useTranslation();
   const scrollRef = useRef(null);
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,12 +12,25 @@ export default function BookingPage() {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
 
-  useEffect(() => {
-    fetchFlights();
-  }, []);
+  const fetchFlights = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_BASE_URL}/api/flights`);
+      setFlights(response.data);
+      setError(null);
+    } catch (err) {
+      setError(t("booking.errorLoading"));
+      console.error('Error fetching flights:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
 
   useEffect(() => {
-    // Check if we need to show arrows based on content width
+    fetchFlights();
+  }, [fetchFlights]);
+
+  useEffect(() => {
     const checkScroll = () => {
       if (scrollRef.current) {
         const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
@@ -31,20 +46,6 @@ export default function BookingPage() {
       window.removeEventListener('resize', checkScroll);
     };
   }, [flights]);
-
-  const fetchFlights = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/flights`);
-      setFlights(response.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load flights. Please try again later.');
-      console.error('Error fetching flights:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const scroll = (direction) => {
     const { current } = scrollRef;
@@ -69,27 +70,23 @@ export default function BookingPage() {
   const getBadgeStyle = (category) => {
     switch (category?.toLowerCase()) {
       case 'vip':
-        return { bg: '#ff5e5e', text: 'VIP' };
+        return { bg: '#ff5e5e', text: t("booking.vip") };
       case 'romantic offer':
-        return { bg: '#e17055', text: 'Romantic offer' };
+        return { bg: '#e17055', text: t("booking.romanticOffer") };
       case 'most reserved':
-        return { bg: '#f39c12', text: 'Most reserved' };
+        return { bg: '#f39c12', text: t("booking.mostReserved") };
       default:
-        return { bg: '#d35400', text: 'Special' };
+        return { bg: '#d35400', text: t("booking.special") };
     }
   };
 
-  // Function to generate slug for URLs
-  const generateSlug = (title) => {
-    return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#f9f8f6] to-[#e8e7e5] flex items-center justify-center py-12">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#d35400] mb-4"></div>
-          <div className="text-2xl text-[#3d2c1e]">Loading amazing flights...</div>
+          <div className="text-2xl text-[#3d2c1e]">{t("booking.loadingFlights")}</div>
         </div>
       </div>
     );
@@ -104,7 +101,7 @@ export default function BookingPage() {
             onClick={fetchFlights}
             className="bg-[#d35400] text-white px-6 py-2 rounded-full font-bold hover:bg-[#e67e22] transition-colors"
           >
-            Try Again
+            {t("booking.tryAgain")}
           </button>
         </div>
       </div>
@@ -115,7 +112,7 @@ export default function BookingPage() {
     <div className="min-h-screen bg-gradient-to-b from-[#f9f8f6] to-[#e8e7e5] flex flex-col items-center py-8">
       {/* Header Section */}
       <div className="w-full pb-8 px-4">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-[#3d2c1e] text-center pt-4 mb-8">Our Flights</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-[#3d2c1e] text-center pt-4 mb-8">{t("booking.title")}</h1>
         <div className="mx-auto w-full max-w-6xl rounded-2xl overflow-hidden shadow-lg">
           <img
             src="/images/ourflight.png"
@@ -127,16 +124,15 @@ export default function BookingPage() {
       
       {/* Description Section */}
       <div className="w-full max-w-4xl text-center mb-12 px-4">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-[#d35400] mb-4">Your Hot-Air Balloon Adventure</h2>
+        <h2 className="text-2xl md:text-3xl font-extrabold text-[#d35400] mb-4">{t("booking.adventureTitle")}</h2>
         <p className="text-gray-700 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-          Each hot-air balloon ride is a unique experience, offering you stunning views of Marrakech, 
-          the Atlas Mountains, and the lush palm groves that surround the city. Choose your perfect adventure below.
+          {t("booking.adventureDescription")}
         </p>
       </div>
 
       {/* Flights Section */}
       <div className="w-full max-w-7xl px-4 mb-12">
-        <h3 className="text-2xl font-bold text-[#3d2c1e] mb-6 ml-2">Available Flights</h3>
+        <h3 className="text-2xl font-bold text-[#3d2c1e] mb-6 ml-2">{t("booking.availableFlights")}</h3>
         
         <div className="relative">
           {/* Left Arrow - Only show if needed */}
@@ -169,7 +165,6 @@ export default function BookingPage() {
             <div className="flex flex-row gap-6">
               {flights.map((flight) => {
                 const badge = getBadgeStyle(flight.category);
-                const slug = generateSlug(flight.title);
                 
                 return (
                   <div key={flight._id} className="flex-none w-[320px] bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
@@ -204,7 +199,7 @@ export default function BookingPage() {
                         <div className="flex items-center gap-1">
                           <span className="text-yellow-400 text-lg">★</span>
                           <span className="text-sm font-bold">
-                            {flight.rating > 0 ? `${flight.rating}/5` : 'New'}
+                            {flight.rating > 0 ? `${flight.rating}/5` : t("booking.new")}
                           </span>
                         </div>
                         
@@ -218,7 +213,7 @@ export default function BookingPage() {
                           href={`/flights/${flight._id}`} 
                           className="block w-full bg-[#d35400] text-white text-center py-2 rounded-xl font-bold text-sm hover:bg-[#e67e22] transition-colors"
                         >
-                          View Details
+                          {t("booking.viewDetails")}
                         </a>
                       </div>
                     </div>
@@ -246,7 +241,7 @@ export default function BookingPage() {
         {/* Scroll indicator for mobile */}
         {flights.length > 1 && (
           <div className="text-center mt-4 text-sm text-gray-500 md:hidden">
-            ← Scroll to see more flights →
+            {t("booking.scrollMore")}
           </div>
         )}
       </div>
