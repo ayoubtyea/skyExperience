@@ -13,8 +13,7 @@ import {
   Loader,
   Trash2Icon
 } from 'lucide-react';
-import axios from 'axios';
-import API_BASE_URL from '../../config/api';
+import axiosInstance from '../../config/axios';
 
 const AdminFlights = () => {
   const [flights, setFlights] = useState([]);
@@ -52,8 +51,8 @@ const AdminFlights = () => {
   const fetchFlights = async () => {
     try {
       setLoading(true);
-      console.log('Fetching flights from:', `${API_BASE_URL}/api/flights`);
-      const response = await axios.get(`${API_BASE_URL}/api/flights`, {withCredentials: true});
+      console.log('Fetching flights from:', '/api/flights');
+      const response = await axiosInstance.get('/api/flights');
       
       console.log('Flights response:', response.data);
       
@@ -190,19 +189,17 @@ const AdminFlights = () => {
       
       let response;
       if (modalMode === 'create') {
-        response = await axios.post(`${API_BASE_URL}/api/flights`, formDataToSend, {
+        response = await axiosInstance.post('/api/flights', formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data'
-          },
-          withCredentials: true
+          }
         });
         setFlights([...flights, response.data]);
       } else if (modalMode === 'edit') {
-        response = await axios.put(`${API_BASE_URL}/api/flights/${selectedFlight._id}`, formDataToSend, {
+        response = await axiosInstance.put(`/api/flights/${selectedFlight._id}`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data'
-          },
-          withCredentials: true
+          }
         });
         setFlights(flights.map(flight => 
           flight._id === selectedFlight._id ? response.data : flight
@@ -225,10 +222,9 @@ const AdminFlights = () => {
     if (!selectedFlight) return;
     
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/flights/${selectedFlight._id}/reviews`, 
-        reviewForm, 
-        { withCredentials: true }
+      const response = await axiosInstance.post(
+        `/api/flights/${selectedFlight._id}/reviews`, 
+        reviewForm
       );
       
       // Update flights state with the complete updated flight data from server
@@ -265,9 +261,8 @@ const AdminFlights = () => {
   // Handle delete review - FIXED
   const handleDeleteReview = async (flightId, reviewId) => {
     try {
-      const response = await axios.delete(
-        `${API_BASE_URL}/api/flights/${flightId}/reviews/${reviewId}`,
-        { withCredentials: true }
+      const response = await axiosInstance.delete(
+        `/api/flights/${flightId}/reviews/${reviewId}`
       );
 
       // Update flights state with server response
@@ -305,7 +300,7 @@ const AdminFlights = () => {
     if (!window.confirm('Are you sure you want to delete this flight?')) return;
     
     try {
-      await axios.delete(`${API_BASE_URL}/api/flights/${flightId}`, {withCredentials: true});
+      await axiosInstance.delete(`/api/flights/${flightId}`);
       setFlights(flights.filter(flight => flight._id !== flightId));
     } catch (err) {
       console.error('Error deleting flight:', err);

@@ -23,8 +23,7 @@ import {
   User,
   Plane
 } from 'lucide-react';
-import axios from 'axios';
-import API_BASE_URL from '../../config/api';
+import axiosInstance from '../../config/axios';
 
 const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -54,10 +53,7 @@ const AdminReservations = () => {
   const fetchReservations = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `${API_BASE_URL}/api/reservations`,
-        { withCredentials: true }
-      );
+      const response = await axiosInstance.get('/api/reservations');
       setReservations(response.data);
       setError(null);
     } catch (err) {
@@ -71,10 +67,7 @@ const AdminReservations = () => {
   // Fetch flights for the create form
   const fetchFlights = async () => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/flights`,
-        { withCredentials: true }
-      );
+      const response = await axiosInstance.get('/api/flights');
       setFlights(response.data);
     } catch (err) {
       console.error('Error fetching flights:', err);
@@ -211,15 +204,9 @@ const AdminReservations = () => {
 
       console.log('Sending reservation data:', reservationData);
       
-      const response = await axios.post(
-        `${API_BASE_URL}/api/reservations`,
-        reservationData,
-        { 
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
+      const response = await axiosInstance.post(
+        '/api/reservations',
+        reservationData
       );
       
       if (response.data) {
@@ -254,10 +241,9 @@ const AdminReservations = () => {
   const updateReservationStatus = async (reservationId, newStatus) => {
     try {
       setLoading(true);
-      const response = await axios.patch(
-        `${API_BASE_URL}/api/reservations/${reservationId}/status`,
-        { status: newStatus },
-        { withCredentials: true }
+      const response = await axiosInstance.patch(
+        `/api/reservations/${reservationId}/status`,
+        { status: newStatus }
       );
       
       if (response.data.success) {
@@ -279,9 +265,8 @@ const AdminReservations = () => {
     if (window.confirm('Are you sure you want to delete this reservation?')) {
       try {
         setLoading(true);
-        await axios.delete(
-          `${API_BASE_URL}/api/reservations/${id}`,
-          { withCredentials: true }
+        await axiosInstance.delete(
+          `/api/reservations/${id}`
         );
         
         // Remove from local state

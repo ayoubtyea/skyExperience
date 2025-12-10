@@ -70,11 +70,13 @@ export const login = async (req, res) => {
     const maxAge = rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
 
     // Set secure HTTP-only cookie
+    // In production, use 'none' for cross-domain, in development use 'lax'
+    const sameSiteSetting = process.env.NODE_ENV === 'production' ? 'none' : 'lax';
     res.cookie('jwt', token, {
       maxAge,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: sameSiteSetting,
       path: '/'
     });
 
@@ -103,10 +105,11 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     // Clear the JWT cookie
+    const sameSiteSetting = process.env.NODE_ENV === 'production' ? 'none' : 'lax';
     res.clearCookie('jwt', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: sameSiteSetting,
       path: '/'
     });
 

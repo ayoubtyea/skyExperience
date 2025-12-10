@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../config/axios';
 import { 
   DollarSign, 
   Plane, 
@@ -19,7 +19,6 @@ import {
   AlertCircle,
   Loader
 } from 'lucide-react';
-import API_BASE_URL from '../../config/api';
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -36,7 +35,7 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/dashboard/overview`, {withCredentials: true});
+      const response = await axiosInstance.get('/api/dashboard/overview');
       
       
       const data = response.data;
