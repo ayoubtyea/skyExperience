@@ -77,11 +77,32 @@ This project is a full-stack web application for booking hot air balloon flights
   docker compose up --build
   ```
 
+## Admin Dashboard Setup
+
+After deploying to production (Render/Vercel), you need to create your first admin user to access the admin dashboard.
+
+**📖 See [ADMIN_SETUP.md](./ADMIN_SETUP.md) for detailed instructions.**
+
+Quick method using cURL:
+
+```bash
+curl -X POST https://skyexperience-1.onrender.com/api/auth/admin \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "email": "your-email@example.com",
+    "password": "YourSecurePassword123!"
+  }'
+```
+
+Then log in at: `https://your-frontend-url/login`
+
 ## Notes
 
 - Make sure your `.env` files are correctly set up before running.
 - For development, you can run frontend and backend separately using `npm start` or `npm run dev` in their respective folders.
 - The backend automatically defaults to a local MongoDB instance when `DATABASE_URL` is undefined, which is handy when working without Docker/Atlas.
+- To create an admin user locally, use: `npm run create-admin` in the server directory.
 
 ## License
 
