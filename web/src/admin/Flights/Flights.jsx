@@ -8,10 +8,8 @@ import {
   Star, 
   X, 
   Save,
-  Upload,
   Search,
   Filter,
-  User,
   Loader,
   Trash2Icon
 } from 'lucide-react';
@@ -54,7 +52,10 @@ const AdminFlights = () => {
   const fetchFlights = async () => {
     try {
       setLoading(true);
+      console.log('Fetching flights from:', `${API_BASE_URL}/api/flights`);
       const response = await axios.get(`${API_BASE_URL}/api/flights`, {withCredentials: true});
+      
+      console.log('Flights response:', response.data);
       
       // Ensure each flight has a reviews array
       const flightsWithReviews = response.data.map(flight => ({
@@ -66,7 +67,15 @@ const AdminFlights = () => {
       setError(null);
     } catch (err) {
       console.error('Error fetching flights:', err);
-      setError('Failed to load flights. Please try again.');
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        url: err.config?.url
+      });
+      
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to load flights. Please try again.';
+      setError(`Failed to load flights: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

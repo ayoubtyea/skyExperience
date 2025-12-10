@@ -32,15 +32,30 @@ const allowedOrigins = (process.env.ORIGIN || 'http://localhost:3000,http://loca
 
 app.use(cookieParser());
 
+// CORS configuration
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
       return callback(null, true);
     }
+    
+    // Check if origin is in allowed list
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+    
+    // In production, also allow Render and Vercel domains for flexibility
+    if (process.env.NODE_ENV === 'production') {
+      const isRenderDomain = origin.includes('.onrender.com');
+      const isVercelDomain = origin.includes('.vercel.app');
+      
+      if (isRenderDomain || isVercelDomain) {
+        console.log(`CORS: Allowing production origin ${origin}`);
+        return callback(null, true);
+      }
+    }
+    
     // Log the blocked origin for debugging
     console.warn(`CORS: Blocked origin ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
     return callback(new Error(`CORS: Origin ${origin} not allowed`));
@@ -50,6 +65,11 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);

@@ -115,9 +115,13 @@ const flightListFields = 'title overview mainImage price rating category images'
 // Public - get all flights
 export const getAllFlights = async (req, res) => {
   try {
+    console.log('GET /api/flights - Request received');
+    console.log('Origin:', req.headers.origin);
     const flights = await Flight.find().select('-reviews._id -program._id')
+    console.log(`GET /api/flights - Found ${flights.length} flights`);
     res.json(flights)
   } catch (error) {
+    console.error('GET /api/flights - Error:', error);
     res.status(500).json({ message: 'Failed to get flights', error: error.message })
   }
 }
