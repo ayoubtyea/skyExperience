@@ -10,7 +10,7 @@ const useOnScreen = (ref, threshold = 0.3) => {
       ([entry]) => setIntersecting(entry.isIntersecting),
       { threshold }
     );
-    
+
     if (ref.current) observer.observe(ref.current);
     return () => {
       if (ref.current) observer.unobserve(ref.current);
@@ -26,18 +26,18 @@ const PanoramicSection = () => {
   const [showSmallImages, setShowSmallImages] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const sectionRef = useRef();
-  
-  const isOnScreen = useOnScreen(sectionRef, 0.5); 
+
+  const isOnScreen = useOnScreen(sectionRef, 0.5);
 
   // Check if device is mobile
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
-    
+
     return () => {
       window.removeEventListener('resize', checkIfMobile);
     };
@@ -52,16 +52,16 @@ const PanoramicSection = () => {
       setTimeout(() => setIsActive(false), 200);
     }
   }, [isOnScreen]);
-  
+
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="w-full bg-white py-12 md:py-16"
     >
       <div className="max-w-6xl mx-auto px-4 w-full">
         <motion.div
           initial={{ opacity: 1, y: 0 }}
-          animate={{ 
+          animate={{
             opacity: isActive ? 0 : 1,
             y: isActive ? -20 : 0
           }}
@@ -73,7 +73,7 @@ const PanoramicSection = () => {
         </motion.div>
 
         <div className="relative h-[350px] sm:h-[380px] md:h-[450px]">
-          <motion.div 
+          <motion.div
             className="flex h-full"
             animate={{
               flexDirection: isActive && !isMobile ? 'row' : 'column',
@@ -82,10 +82,10 @@ const PanoramicSection = () => {
             transition={{ duration: 0.6, ease: "easeInOut" }}
           >
             {/* Left side content - appears on scroll */}
-            <motion.div 
-              className="flex-1 pointer-events-none relative"
+            <motion.div
+              className="flex-1 pointer-events-none relative z-10"
               initial={{ opacity: 0, x: -50 }}
-              animate={{ 
+              animate={{
                 opacity: isActive ? 1 : 0,
                 x: isActive ? 0 : -50,
               }}
@@ -100,12 +100,16 @@ const PanoramicSection = () => {
                     transition={{ duration: 0.4 }}
                     className="pr-0 md:pr-8 absolute top-0 left-0 w-full md:w-auto"
                   >
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-3 md:mb-4 text-center md:text-left">{t("section.panoramicViews")}</h2>
-                    <h3 className="text-xl font-bold mb-3 md:mb-4 text-center md:text-left">{t("section.marrakechFromAbove")}</h3>
-                    <p className="text-base md:text-lg text-black/80 mb-4 md:mb-6 max-w-md mx-auto md:mx-0 text-center md:text-left">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-3 md:mb-4 text-center md:text-left text-white md:text-black drop-shadow-lg md:drop-shadow-none">
+                      {t("section.panoramicViews")}
+                    </h2>
+                    <h3 className="text-xl font-bold mb-3 md:mb-4 text-center md:text-left text-white md:text-black drop-shadow-lg md:drop-shadow-none">
+                      {t("section.marrakechFromAbove")}
+                    </h3>
+                    <p className="text-sm sm:text-base md:text-lg mb-4 md:mb-6 max-w-md mx-auto md:mx-0 text-center md:text-left text-white md:text-gray-900 drop-shadow-lg md:drop-shadow-none">
                       {t("section.description")}
                     </p>
-                    
+
                     <div className="flex justify-center md:justify-start gap-4 md:gap-6">
                       <AnimatePresence>
                         {showSmallImages && (
@@ -117,7 +121,7 @@ const PanoramicSection = () => {
                               initial={{ opacity: 0, x: 20, scale: 0.9 }}
                               animate={{ opacity: 1, x: 0, scale: 1 }}
                               exit={{ opacity: 0, x: 20, scale: 0.9 }}
-                              transition={{ 
+                              transition={{
                                 duration: 0.3,
                                 delay: 0.1
                               }}
@@ -129,7 +133,7 @@ const PanoramicSection = () => {
                               initial={{ opacity: 0, x: 20, scale: 0.9 }}
                               animate={{ opacity: 1, x: 0, scale: 1 }}
                               exit={{ opacity: 0, x: 20, scale: 0.9 }}
-                              transition={{ 
+                              transition={{
                                 duration: 0.3,
                                 delay: 0.2
                               }}
@@ -143,9 +147,9 @@ const PanoramicSection = () => {
               </AnimatePresence>
             </motion.div>
 
-            {/* Main Image */}
-            <motion.div 
-              className="flex justify-center items-center h-full cursor-pointer"
+            {/* Main Image Container with Gradient Overlay */}
+            <motion.div
+              className="flex justify-center items-center h-full cursor-pointer relative"
               animate={{
                 width: isActive && !isMobile ? '50%' : '100%'
               }}
@@ -162,6 +166,16 @@ const PanoramicSection = () => {
                 transition={{ duration: 0.6, ease: "easeInOut" }}
                 whileHover={{ scale: isMobile ? 1 : 1.02 }}
               />
+
+              {/* Gradient Overlay - Only on Mobile when active */}
+              {isMobile && isActive && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-black/20 rounded-2xl pointer-events-none"
+                />
+              )}
             </motion.div>
           </motion.div>
         </div>
