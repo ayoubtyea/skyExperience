@@ -120,8 +120,11 @@
     "flightNotFound": "Vol introuvable",
     "backToMain": "← Retour à l'image principale",
     "reservation": "🗓️ Réservation",
-    "minDays": "Minimum 7 jours à l'avance",
-    "validYear": "Offre valable toute l'année, sous réserve des conditions météo",
+    "item1": "Transport aller-retour de luxe depuis votre hôtel",
+    "item2": "Accueil VIP avec thé marocain et collations",
+    "item3": "Vol en montgolfière d'1 heure au-dessus de Marrakech",
+    "item4": "Petit-déjeuner traditionnel dans une kasbah nomade",
+    "item5": "Certificat de vol personnalisé inclus",
     "reviews": "Avis",
     "packIncluded": "🎁 Pack Inclus",
     "overview": "Aperçu",
@@ -134,4 +137,3 @@
     "description": "Survolez la Ville Rouge et au-delà dans nos montgolfières sûres et confortables. Chaque vol est un nouveau chef-d'œuvre peint par le ciel."
   }
 }
-

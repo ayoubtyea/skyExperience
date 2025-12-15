@@ -70,35 +70,35 @@ const DetailsFlight = () => {
             key="main"
             src={flight.mainImage}
             alt={`${flight.title} main`}
-            className={`w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl border-2 ${mainImg===flight.mainImage ? 'border-orange-500' : 'border-transparent'} cursor-pointer`}
+            className={`w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl border-2 ${mainImg === flight.mainImage ? 'border-orange-500' : 'border-transparent'} cursor-pointer`}
             onClick={() => setMainImg(flight.mainImage)}
           />
           {flight.images.map((src, idx) => (
             <img
               key={src}
               src={src}
-              alt={`${flight.title} thumbnail ${idx+1}`}
-              className={`w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl border-2 ${mainImg===src ? 'border-orange-500' : 'border-transparent'} cursor-pointer`}
+              alt={`${flight.title} thumbnail ${idx + 1}`}
+              className={`w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl border-2 ${mainImg === src ? 'border-orange-500' : 'border-transparent'} cursor-pointer`}
               onClick={() => setMainImg(src)}
             />
           ))}
         </div>
-        
+
         {/* Centre : image principale + infos */}
         <div className="flex-1 flex flex-col items-center md:items-start">
           <h1 className="text-2xl md:text-3xl font-extrabold mb-4 mt-2 md:mt-0">
             <span className="font-black">{flight.title}</span>
           </h1>
-          
+
           {/* Main image with navigation indicator */}
           <div className="relative w-full max-w-xl mb-6">
-            <img 
-              src={mainImg} 
-              alt={flight.title} 
-              className="w-full h-56 md:h-64 object-cover rounded-2xl" 
+            <img
+              src={mainImg}
+              alt={flight.title}
+              className="w-full h-56 md:h-64 object-cover rounded-2xl"
             />
             {mainImg !== flight.mainImage && (
-              <button 
+              <button
                 onClick={() => setMainImg(flight.mainImage)}
                 className="absolute top-2 left-2 bg-white/80 hover:bg-white text-gray-800 font-medium py-1 px-3 rounded-lg text-sm transition-all"
               >
@@ -106,18 +106,21 @@ const DetailsFlight = () => {
               </button>
             )}
           </div>
-          
+
           <h3 className="text-lg md:text-xl font-bold mb-2">{t("detailsFlight.reservation")}</h3>
           <ul className="list-disc pl-6 text-base md:text-lg text-black/80 mb-4">
-            <li>{t("detailsFlight.minDays")}</li>
-            <li>{t("detailsFlight.validYear")}</li>
+            <li>{t("detailsFlight.item1")}</li>
+            <li>{t("detailsFlight.item2")}</li>
+            <li>{t("detailsFlight.item3")}</li>
+            <li>{t("detailsFlight.item4")}</li>
+            <li>{t("detailsFlight.item5")}</li>
           </ul>
         </div>
-        
+
         <FlightReservation flight={flight} />
       </div>
 
-      
+
       {/* Bloc Reviews + Program + Overview */}
       <div className="w-full max-w-6xl mx-auto mt-12 px-4">
         {/* Reviews */}
@@ -151,7 +154,7 @@ const DetailsFlight = () => {
             </div>
           ))}
         </div>
-        
+
         {/* Program */}
         <h2 className="text-3xl font-extrabold mb-4">{t("detailsFlight.packIncluded")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -162,26 +165,26 @@ const DetailsFlight = () => {
             </div>
           ))}
         </div>
-        
+
         {/* Overview */}
         <h2 className="text-3xl font-extrabold mb-4">{t("detailsFlight.overview")}</h2>
         <div className="text-base md:text-lg text-black/90 mb-6 max-w-3xl">
           <p>{flight.overview}</p>
         </div>
-        
+
         <div className="flex items-center gap-2 mb-2">
           <span className="flex gap-1 text-xl">
             {Array.from({ length: 5 }, (_, i) => (
               <StarIcon
                 key={i}
-        className={i < Math.round(flight.rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-400 fill-gray-400"}
+                className={i < Math.round(flight.rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-400 fill-gray-400"}
               />
             ))}
           </span>
           <span className="text-black/80">({flight.totalReviews} {t("detailsFlight.reviewsCount")})</span>
         </div>
       </div>
-      
+
       {/* FLIGHT suggestion section */}
       <div className="w-full max-w-6xl mx-auto mb-0 px-4">
         <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-8">

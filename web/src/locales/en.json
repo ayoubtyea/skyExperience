@@ -120,8 +120,11 @@
     "flightNotFound": "Flight not found",
     "backToMain": "← Back to main",
     "reservation": "🗓️ Reservation",
-    "minDays": "Minimum 7 days in advance",
-    "validYear": "Offer valid all year, subject to weather conditions",
+    "item1": "Luxury round-trip transport from your hotel",
+    "item2": "VIP welcome with Moroccan tea and snacks",
+    "item3": "1-hour hot-air balloon flight over Marrakech",
+    "item4": "Traditional breakfast in a nomadic kasbah",
+    "item5": "Personalized flight certificate included",
     "reviews": "Reviews",
     "packIncluded": "🎁 Pack Inclus",
     "overview": "Overview",
@@ -134,4 +137,3 @@
     "description": "Soar over the Red City and beyond in our safe and comfortable hot-air balloons. Each flight is a new masterpiece painted by the sky."
   }
 }
-
