@@ -11,6 +11,9 @@ export default function BookingPage() {
   const [error, setError] = useState(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [openCard, setOpenCard] = useState(null);
+
 
   const fetchFlights = useCallback(async () => {
     try {
@@ -41,7 +44,7 @@ export default function BookingPage() {
 
     checkScroll();
     window.addEventListener('resize', checkScroll);
-    
+
     return () => {
       window.removeEventListener('resize', checkScroll);
     };
@@ -50,14 +53,13 @@ export default function BookingPage() {
   const scroll = (direction) => {
     const { current } = scrollRef;
     if (current) {
-      const cardWidth = 350; // width of a card including gap
+      const cardWidth = 350;
       if (direction === "left") {
         current.scrollBy({ left: -cardWidth, behavior: "smooth" });
       } else {
         current.scrollBy({ left: cardWidth, behavior: "smooth" });
       }
-      
-      // Update arrow visibility after scroll
+
       setTimeout(() => {
         const { scrollWidth, clientWidth, scrollLeft } = current;
         setShowLeftArrow(scrollLeft > 0);
@@ -66,7 +68,6 @@ export default function BookingPage() {
     }
   };
 
-  // Function to get badge style based on category
   const getBadgeStyle = (category) => {
     switch (category?.toLowerCase()) {
       case 'vip':
@@ -79,7 +80,6 @@ export default function BookingPage() {
         return { bg: '#d35400', text: t("booking.special") };
     }
   };
-
 
   if (loading) {
     return (
@@ -97,7 +97,7 @@ export default function BookingPage() {
       <div className="min-h-screen bg-gradient-to-b from-[#f9f8f6] to-[#e8e7e5] flex items-center justify-center py-12">
         <div className="text-center max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg">
           <div className="text-red-500 text-xl mb-4">{error}</div>
-          <button 
+          <button
             onClick={fetchFlights}
             className="bg-[#d35400] text-white px-6 py-2 rounded-full font-bold hover:bg-[#e67e22] transition-colors"
           >
@@ -110,9 +110,72 @@ export default function BookingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f9f8f6] to-[#e8e7e5] flex flex-col items-center py-8">
+      <style>{`
+        /* ---------- BADGES ---------- */
+        @keyframes breathe {
+          0% { transform: scale(1); }
+          50% { transform: scale(0.94); }
+          100% { transform: scale(1); }
+        }
+
+        .badge-breathe {
+          animation: breathe 2.6s ease-in-out infinite;
+        }
+
+        .badge-vip {
+          background: #ff5e5e;
+          font-size: 26px;
+          font-weight: 900;
+          padding: 16px 28px;
+          border-radius: 999px;
+          color: white;
+        }
+
+        .badge-reserved {
+          background: #f39c12;
+          font-size: 18px;
+          padding: 12px 20px;
+          color: white;
+          border-radius: 10px;
+        }
+
+        .heart-badge {
+          background: #e85b5b;
+          color: white;
+          width: 120px;
+          height: 120px;
+          font-weight: 700;
+          text-align: center;
+          padding-top: 32px;
+          clip-path: path(
+            "M60 110 C10 75, 0 45, 30 30
+             C50 20, 60 35, 60 35
+             C60 35, 70 20, 90 30
+             C120 45, 110 75, 60 110"
+          );
+        }
+
+        /* ---------- VIP BUTTON ---------- */
+        .vip-animated-btn {
+          background: linear-gradient(135deg, #ff2d2d, #ff6a6a);
+          animation: vipPulse 2s infinite;
+        }
+
+        @keyframes vipPulse {
+          0% { box-shadow: 0 0 0 rgba(255,90,90,0.5); }
+          50% { box-shadow: 0 0 14px rgba(255,90,90,0.6); }
+          100% { box-shadow: 0 0 0 rgba(255,90,90,0.5); }
+        }
+
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { scrollbar-width: none; }
+      `}</style>
+
       {/* Header Section */}
       <div className="w-full pb-8 px-4">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-[#3d2c1e] text-center pt-4 mb-8">{t("booking.title")}</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-[#3d2c1e] text-center pt-4 mb-8">
+          {t("booking.title")}
+        </h1>
         <div className="mx-auto w-full max-w-6xl rounded-2xl overflow-hidden shadow-lg">
           <img
             src="/images/ourflight.png"
@@ -121,129 +184,132 @@ export default function BookingPage() {
           />
         </div>
       </div>
-      
+
       {/* Description Section */}
       <div className="w-full max-w-4xl text-center mb-12 px-4">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-[#d35400] mb-4">{t("booking.adventureTitle")}</h2>
+        <h2 className="text-2xl md:text-3xl font-extrabold text-[#d35400] mb-4">
+          {t("booking.adventureTitle")}
+        </h2>
         <p className="text-gray-700 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
           {t("booking.adventureDescription")}
         </p>
       </div>
 
       {/* Flights Section */}
-      <div className="w-full max-w-7xl px-4 mb-12">
-        <h3 className="text-2xl font-bold text-[#3d2c1e] mb-6 ml-2">{t("booking.availableFlights")}</h3>
-        
-        <div className="relative">
-          {/* Left Arrow - Only show if needed */}
-          {showLeftArrow && (
-            <button
-              aria-label="Scroll left"
-              onClick={() => scroll("left")}
-              className="absolute left-0 z-10 bg-white/90 hover:bg-white text-[#d35400] rounded-full shadow-lg p-3 -translate-y-1/2 hidden md:block"
-              style={{ top: '50%', transform: 'translateY(-50%)' }}
-            >
-              <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path d="M15 19l-7-7 7-7" stroke="#d35400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          )}
-          
-          {/* Scrollable Cards Container */}
-          <div
-            ref={scrollRef}
-            className="w-full overflow-x-auto pb-6 px-4 scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            onScroll={() => {
-              if (scrollRef.current) {
-                const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
-                setShowLeftArrow(scrollLeft > 0);
-                setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
-              }
-            }}
+      <div className="max-w-7xl mx-auto px-4 relative">
+        {/* ARROWS */}
+        {showLeftArrow && (
+          <button
+            onClick={() => scroll("left")}
+            className="hidden md:block absolute left-0 top-1/2 z-20 bg-white p-3 rounded-full shadow"
           >
-            <div className="flex flex-row gap-6">
-              {flights.map((flight) => {
-                const badge = getBadgeStyle(flight.category);
-                
-                return (
-                  <div key={flight._id} className="flex-none w-[320px] bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
-                    <div className="relative">
-                      <img 
-                        src={flight.mainImage || "/images/default-flight.png"} 
-                        alt={flight.title} 
-                        className="w-full h-48 object-cover" 
-                        onError={(e) => {
-                          e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='200' viewBox='0 0 350 200'%3E%3Crect width='350' height='200' fill='%23f0f0f0'/%3E%3Cpath d='M175 100 L200 125 L225 100 L250 125 L275 100' stroke='%23d35400' stroke-width='2' fill='none'/%3E%3Ccircle cx='175' cy='100' r='15' fill='%23d35400'/%3E%3C/svg%3E";
-                        }}
-                      />
-                      <span 
-                        className="absolute top-3 right-3 text-white text-xs font-bold px-3 py-1 rounded-xl shadow-md"
-                        style={{ backgroundColor: badge.bg }}
-                      >
-                        {badge.text}
-                      </span>
-                    </div>
-                    
-                    <div className="p-5">
-                      <div className="mb-3">
-                        <h4 className="font-bold text-lg text-black mb-1">
-                          {flight.title.toUpperCase()}
-                        </h4>
-                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                          {flight.overview.length > 50 ? `${flight.overview.substring(0, 50)}...` : flight.overview}
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center justify-between mt-4">
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-400 text-lg">★</span>
-                          <span className="text-sm font-bold">
-                            {flight.rating > 0 ? `${flight.rating}/5` : t("booking.new")}
-                          </span>
-                        </div>
-                        
-                        <div className="text-lg font-bold text-[#d35400]">
-                          ${flight.price}
-                        </div>
-                      </div>
-                      
-                      <div className="mt-5">
-                        <a 
-                          href={`/flights/${flight._id}`} 
-                          className="block w-full bg-[#d35400] text-white text-center py-2 rounded-xl font-bold text-sm hover:bg-[#e67e22] transition-colors"
-                        >
-                          {t("booking.viewDetails")}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          
-          {/* Right Arrow - Only show if needed */}
-          {showRightArrow && (
-            <button
-              aria-label="Scroll right"
-              onClick={() => scroll("right")}
-              className="absolute right-0 z-10 bg-white/90 hover:bg-white text-[#d35400] rounded-full shadow-lg p-3 -translate-y-1/2 hidden md:block"
-              style={{ top: '50%', transform: 'translateY(-50%)' }}
-            >
-              <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path d="M9 5l7 7-7 7" stroke="#d35400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          )}
-        </div>
-        
-        {/* Scroll indicator for mobile */}
-        {flights.length > 1 && (
-          <div className="text-center mt-4 text-sm text-gray-500 md:hidden">
-            {t("booking.scrollMore")}
-          </div>
+            ‹
+          </button>
         )}
+
+        {showRightArrow && (
+          <button
+            onClick={() => scroll("right")}
+            className="hidden md:block absolute right-0 top-1/2 z-20 bg-white p-3 rounded-full shadow"
+          >
+            ›
+          </button>
+        )}
+
+        {/* CARDS */}
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto scrollbar-hide px-10"
+        >
+          {flights.map((flight) => {
+            const isOpen = openCard === flight._id;
+
+            return (
+              <div
+                key={flight._id}
+                onClick={() =>
+                  setOpenCard(isOpen ? null : flight._id)
+                }
+                className="flex-none w-[360px] h-[520px] rounded-[30px] overflow-hidden shadow-xl bg-white relative cursor-pointer"
+              >
+                {/* IMAGE */}
+                <img
+                  src={flight.mainImage}
+                  alt={flight.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+
+                {/* GRADIENT */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+                {/* BADGE */}
+                {flight.category && (
+                  <div className="absolute top-4 right-4 badge-breathe z-20">
+                    {flight.category.toLowerCase() === "vip" && (
+                      <div className="badge-vip">VIP</div>
+                    )}
+                    {flight.category.toLowerCase() === "romantic offer" && (
+                      <div className="heart-badge">
+                        Romantic<br />Offer
+                      </div>
+                    )}
+                    {flight.category.toLowerCase() === "most reserved" && (
+                      <div className="badge-reserved">Most Reserved</div>
+                    )}
+                  </div>
+                )}
+
+                {/* BOTTOM CONTENT */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
+                  <h3 className="text-2xl font-extrabold">
+                    {flight.title}
+                  </h3>
+
+                  <p className="text-sm opacity-90 mt-1">
+                    Hot-Air Balloon Flight in Marrakech
+                  </p>
+
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center gap-2 text-lg font-bold">
+                      <span className="text-yellow-400 text-xl">★</span>
+                      {flight.rating || "4.9"}/5
+                    </div>
+
+                    <button
+                      className={`px-6 py-2 rounded-full font-bold text-white
+                        ${flight.category?.toLowerCase() === "vip"
+                          ? "vip-animated-btn"
+                          : "bg-red-600"
+                        }
+                      `}
+                    >
+                      Check Details
+                    </button>
+                  </div>
+                </div>
+
+                {/* WHITE INFO PANEL */}
+                <div
+                  className={`absolute bottom-0 left-0 right-0 bg-white text-black transition-all duration-500
+                    ${isOpen ? "h-[45%] p-6" : "h-0 p-0 overflow-hidden"}
+                  `}
+                >
+                  <h4 className="text-xl font-extrabold mb-2">
+                    {flight.title}
+                  </h4>
+
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {flight.overview}
+                  </p>
+
+                  <div className="mt-4 text-lg font-bold text-[#d35400]">
+                    ${flight.price}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
