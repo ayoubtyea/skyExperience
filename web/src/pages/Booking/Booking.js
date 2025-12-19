@@ -196,121 +196,113 @@ export default function BookingPage() {
       </div>
 
       {/* Flights Section */}
-      <div className="max-w-7xl mx-auto px-4 relative">
-        {/* ARROWS */}
-        {showLeftArrow && (
-          <button
-            onClick={() => scroll("left")}
-            className="hidden md:block absolute left-0 top-1/2 z-20 bg-white p-3 rounded-full shadow"
-          >
-            ‹
-          </button>
-        )}
+<div className="w-full max-w-7xl mx-auto px-4 relative">
+  {/* ARROWS - Hidden on mobile, shown on md screens up */}
+  {showLeftArrow && (
+    <button
+      onClick={() => scroll("left")}
+      className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-40 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-all"
+    >
+      ‹
+    </button>
+  )}
 
-        {showRightArrow && (
-          <button
-            onClick={() => scroll("right")}
-            className="hidden md:block absolute right-0 top-1/2 z-20 bg-white p-3 rounded-full shadow"
-          >
-            ›
-          </button>
-        )}
+  {showRightArrow && (
+    <button
+      onClick={() => scroll("right")}
+      className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-40 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-all"
+    >
+      ›
+    </button>
+  )}
 
-        {/* CARDS */}
+  {/* CARDS CONTAINER */}
+  <div
+    ref={scrollRef}
+    className="flex gap-4 md:gap-8 overflow-x-auto scrollbar-hide px-2 md:px-10 py-6 snap-x snap-mandatory"
+  >
+    {flights.map((flight) => {
+      const isOpen = openCard === flight._id;
+      const category = flight.category?.toLowerCase();
+
+      return (
         <div
-          ref={scrollRef}
-          className="flex gap-6 overflow-x-auto scrollbar-hide px-10"
+          key={flight._id}
+          onClick={() => setOpenCard(isOpen ? null : flight._id)}
+          /* RESPONSIVE WIDTH: 
+             w-[85vw] -> mobile (shows a peek of the next card)
+             md:w-[350px] -> desktop fixed size 
+          */
+          className="flex-none w-[85vw] sm:w-[300px] md:w-[360px] h-[480px] md:h-[520px] rounded-[30px] overflow-hidden shadow-xl bg-white relative cursor-pointer snap-center"
         >
-          {flights.map((flight) => {
-            const isOpen = openCard === flight._id;
+          {/* IMAGE */}
+          <img
+            src={flight.mainImage}
+            alt={flight.title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+          />
 
-            return (
-              <div
-                key={flight._id}
-                onClick={() =>
-                  setOpenCard(isOpen ? null : flight._id)
-                }
-                className="flex-none w-[360px] h-[520px] rounded-[30px] overflow-hidden shadow-xl bg-white relative cursor-pointer"
-              >
-                {/* IMAGE */}
-                <img
-                  src={flight.mainImage}
-                  alt={flight.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+          {/* GRADIENT OVERLAY */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                {/* GRADIENT */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-                {/* BADGE */}
-                {flight.category && (
-                  <div className="absolute top-4 right-4 badge-breathe z-20">
-                    {flight.category.toLowerCase() === "vip" && (
-                      <div className="badge-vip">VIP</div>
-                    )}
-                    {flight.category.toLowerCase() === "romantic offer" && (
-                      <div className="heart-badge">
-                        Romantic<br />Offer
-                      </div>
-                    )}
-                    {flight.category.toLowerCase() === "most reserved" && (
-                      <div className="badge-reserved">Most Reserved</div>
-                    )}
+          {/* RESPONSIVE FLIP BADGE */}
+          {category && (
+            <div className="absolute top-3 right-3 md:top-4 md:right-4 breathe-animation">
+              <div className={`flip-card ${category === 'vip' ? 'style-vip' : category === 'romantic offer' ? 'style-romantic' : 'style-reserved'}`}>
+                <div className="flip-card-inner">
+                  <div className="flip-card-front">
+                    {category === 'vip' ? 'VIP' : category === 'romantic offer' ? 'Romantic Offer' : 'Most Reserved'}
                   </div>
-                )}
-
-                {/* BOTTOM CONTENT */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
-                  <h3 className="text-2xl font-extrabold">
-                    {flight.title}
-                  </h3>
-
-                  <p className="text-sm opacity-90 mt-1">
-                    Hot-Air Balloon Flight in Marrakech
-                  </p>
-
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center gap-2 text-lg font-bold">
-                      <span className="text-yellow-400 text-xl">★</span>
-                      {flight.rating || "4.9"}/5
-                    </div>
-
-                    <button
-                      className={`px-6 py-2 rounded-full font-bold text-white
-                        ${flight.category?.toLowerCase() === "vip"
-                          ? "vip-animated-btn"
-                          : "bg-red-600"
-                        }
-                      `}
-                    >
-                      Check Details
-                    </button>
-                  </div>
-                </div>
-
-                {/* WHITE INFO PANEL */}
-                <div
-                  className={`absolute bottom-0 left-0 right-0 bg-white text-black transition-all duration-500
-                    ${isOpen ? "h-[45%] p-6" : "h-0 p-0 overflow-hidden"}
-                  `}
-                >
-                  <h4 className="text-xl font-extrabold mb-2">
-                    {flight.title}
-                  </h4>
-
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {flight.overview}
-                  </p>
-
-                  <div className="mt-4 text-lg font-bold text-[#d35400]">
-                    ${flight.price}
-                  </div>
+                  <div className="flip-card-back">${flight.price}</div>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          )}
+
+          {/* BOTTOM CONTENT */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 text-white z-10">
+            <h3 className="text-xl md:text-2xl font-extrabold truncate">
+              {flight.title}
+            </h3>
+            <p className="text-xs md:text-sm opacity-90 mt-1">
+              Hot-Air Balloon Flight
+            </p>
+
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center gap-1 md:gap-2 text-base md:text-lg font-bold">
+                <span className="text-yellow-400 text-lg md:text-xl">★</span>
+                {flight.rating || "4.9"}
+              </div>
+
+              <button className="px-4 md:px-6 py-1.5 md:py-2 rounded-full font-bold text-sm md:text-base bg-red-600 hover:bg-red-700 transition-colors">
+                {t("booking.details")}
+              </button>
+            </div>
+          </div>
+
+          {/* WHITE INFO PANEL (Mobile Friendly) */}
+          <div
+            className={`absolute bottom-0 left-0 right-0 bg-white text-black transition-all duration-500 z-20 shadow-[0_-5px_15px_rgba(0,0,0,0.1)]
+              ${isOpen ? "h-[50%] p-5 md:p-6" : "h-0 p-0 overflow-hidden"}
+            `}
+          >
+            <div className="flex justify-between items-start mb-2">
+              <h4 className="text-lg md:text-xl font-extrabold leading-tight">
+                {flight.title}
+              </h4>
+              <div className="text-lg font-bold text-[#d35400]">
+                ${flight.price}
+              </div>
+            </div>
+            <p className="text-xs md:text-sm text-gray-600 leading-relaxed line-clamp-4">
+              {flight.overview}
+            </p>
+          </div>
         </div>
-      </div>
+      );
+    })}
+  </div>
+</div>
     </div>
   );
 }
