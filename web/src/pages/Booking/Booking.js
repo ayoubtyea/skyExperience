@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import API_BASE_URL from '../../config/api';
+import { Link } from "react-router-dom"; // Ensure react-router-dom is installeds
 
 export default function BookingPage() {
   const { t } = useTranslation();
@@ -110,67 +111,6 @@ export default function BookingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f9f8f6] to-[#e8e7e5] flex flex-col items-center py-8">
-      <style>{`
-        /* ---------- BADGES ---------- */
-        @keyframes breathe {
-          0% { transform: scale(1); }
-          50% { transform: scale(0.94); }
-          100% { transform: scale(1); }
-        }
-
-        .badge-breathe {
-          animation: breathe 2.6s ease-in-out infinite;
-        }
-
-        .badge-vip {
-          background: #ff5e5e;
-          font-size: 26px;
-          font-weight: 900;
-          padding: 16px 28px;
-          border-radius: 999px;
-          color: white;
-        }
-
-        .badge-reserved {
-          background: #f39c12;
-          font-size: 18px;
-          padding: 12px 20px;
-          color: white;
-          border-radius: 10px;
-        }
-
-        .heart-badge {
-          background: #e85b5b;
-          color: white;
-          width: 120px;
-          height: 120px;
-          font-weight: 700;
-          text-align: center;
-          padding-top: 32px;
-          clip-path: path(
-            "M60 110 C10 75, 0 45, 30 30
-             C50 20, 60 35, 60 35
-             C60 35, 70 20, 90 30
-             C120 45, 110 75, 60 110"
-          );
-        }
-
-        /* ---------- VIP BUTTON ---------- */
-        .vip-animated-btn {
-          background: linear-gradient(135deg, #ff2d2d, #ff6a6a);
-          animation: vipPulse 2s infinite;
-        }
-
-        @keyframes vipPulse {
-          0% { box-shadow: 0 0 0 rgba(255,90,90,0.5); }
-          50% { box-shadow: 0 0 14px rgba(255,90,90,0.6); }
-          100% { box-shadow: 0 0 0 rgba(255,90,90,0.5); }
-        }
-
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { scrollbar-width: none; }
-      `}</style>
-
       {/* Header Section */}
       <div className="w-full pb-8 px-4">
         <h1 className="text-4xl md:text-5xl font-extrabold text-[#3d2c1e] text-center pt-4 mb-8">
@@ -275,7 +215,7 @@ export default function BookingPage() {
               </div>
 
               <button className="px-4 md:px-6 py-1.5 md:py-2 rounded-full font-bold text-sm md:text-base bg-red-600 hover:bg-red-700 transition-colors">
-                {t("booking.details")}
+                {t("Check Details")}
               </button>
             </div>
           </div>
@@ -297,6 +237,12 @@ export default function BookingPage() {
             <p className="text-xs md:text-sm text-gray-600 leading-relaxed line-clamp-4">
               {flight.overview}
             </p>
+            <Link 
+                    to={`/flights/${flight._id}`}
+                    className="block w-full bg-[#d35400] text-white text-center py-2 rounded-xl font-bold text-sm hover:bg-[#e67e22]"
+                  >
+                    {t("booking.viewDetails")}
+                  </Link>
           </div>
         </div>
       );
