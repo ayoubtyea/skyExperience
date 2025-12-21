@@ -167,84 +167,56 @@ export default function BookingPage() {
 
       return (
         <div
-          key={flight._id}
-          onClick={() => setOpenCard(isOpen ? null : flight._id)}
-          /* RESPONSIVE WIDTH: 
-             w-[85vw] -> mobile (shows a peek of the next card)
-             md:w-[350px] -> desktop fixed size 
-          */
-          className="flex-none w-[85vw] sm:w-[300px] md:w-[360px] h-[480px] md:h-[520px] rounded-[30px] overflow-hidden shadow-xl bg-white relative cursor-pointer snap-center"
-        >
-          {/* IMAGE */}
-          <img
-            src={flight.mainImage}
-            alt={flight.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-          />
+  key={flight._id}
+  className="tour-card flex-none w-[85vw] sm:w-[300px] md:w-[360px] snap-center cursor-pointer"
+>
+  <div className="card-inner">
+    <div className="image-box">
+      <img
+        src={flight.mainImage}
+        alt={flight.title}
+      />
 
-          {/* GRADIENT OVERLAY */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-          {/* RESPONSIVE FLIP BADGE */}
-          {category && (
-            <div className="absolute top-3 right-3 md:top-4 md:right-4 breathe-animation">
-              <div className={`flip-card ${category === 'vip' ? 'style-vip' : category === 'romantic offer' ? 'style-romantic' : 'style-reserved'}`}>
-                <div className="flip-card-inner">
-                  <div className="flip-card-front">
-                    {category === 'vip' ? 'VIP' : category === 'romantic offer' ? 'Romantic Offer' : 'Most Reserved'}
-                  </div>
-                  <div className="flip-card-back">${flight.price}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* BOTTOM CONTENT */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 text-white z-10">
-            <h3 className="text-xl md:text-2xl font-extrabold truncate">
-              {flight.title}
-            </h3>
-            <p className="text-xs md:text-sm opacity-90 mt-1">
-              Hot-Air Balloon Flight
-            </p>
-
-            <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center gap-1 md:gap-2 text-base md:text-lg font-bold">
-                <span className="text-yellow-400 text-lg md:text-xl">★</span>
-                {flight.rating || "4.9"}
-              </div>
-
-              <button className="px-4 md:px-6 py-1.5 md:py-2 rounded-full font-bold text-sm md:text-base bg-red-600 hover:bg-red-700 transition-colors">
-                {t("Check Details")}
-              </button>
-            </div>
+      {/* BADGE */}
+      <div className="badge-flip-wrapper">
+        <div className="badge-flip-inner">
+          <div className="badge-front">
+            {flight.category?.toUpperCase() || "VIP"}
           </div>
-
-          {/* WHITE INFO PANEL (Mobile Friendly) */}
-          <div
-            className={`absolute bottom-0 left-0 right-0 bg-white text-black transition-all duration-500 z-20 shadow-[0_-5px_15px_rgba(0,0,0,0.1)]
-              ${isOpen ? "h-[50%] p-5 md:p-6" : "h-0 p-0 overflow-hidden"}
-            `}
-          >
-            <div className="flex justify-between items-start mb-2">
-              <h4 className="text-lg md:text-xl font-extrabold leading-tight">
-                {flight.title}
-              </h4>
-              <div className="text-lg font-bold text-[#d35400]">
-                ${flight.price}
-              </div>
-            </div>
-            <p className="text-xs md:text-sm text-gray-600 leading-relaxed line-clamp-4">
-              {flight.overview}
-            </p>
-            <Link 
-                    to={`/flights/${flight._id}`}
-                    className="block w-full bg-[#d35400] text-white text-center py-2 rounded-xl font-bold text-sm hover:bg-[#e67e22]"
-                  >
-                    {t("booking.viewDetails")}
-                  </Link>
+          <div className="badge-back">
+            <div className="price-val">${flight.price}</div>
+            <div className="price-sub">/Adult</div>
           </div>
         </div>
+      </div>
+
+      {/* WHITE SLIDE */}
+      <div className="white-slide-up" />
+    </div>
+
+    {/* INFO */}
+    <div className="info-area">
+      <div className="text-block">
+        <h3>
+          <strong>{flight.title.split(" ")[0]}</strong>{" "}
+          {flight.title.replace(flight.title.split(" ")[0], "")}
+        </h3>
+      </div>
+
+      <div className="footer-block">
+        <span className="rating">★ {flight.rating || "4.9"}/5</span>
+
+        <Link
+          to={`/flights/${flight._id}`}
+          className="btn-details"
+        >
+          Check Details
+        </Link>
+      </div>
+    </div>
+  </div>
+</div>
+
       );
     })}
   </div>
