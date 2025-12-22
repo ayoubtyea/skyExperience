@@ -41,27 +41,44 @@ export default function HomePage() {
     );
   }
   return (
-          <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/landing.png')" }}>
+          <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/skyvid.mp4')" }}>
             {/* Hero Section */}
-            <main className="flex items-center justify-center h-[calc(100vh-72px)] w-full">
-              <div className="flex flex-col justify-between items-center w-full h-full text-center py-12">
-                
-                {/* Heading in center */}
-                <div className="flex-1 flex items-center justify-center">
-                  <h1 className="text-3xl md:text-5xl font-bold text-black drop-shadow-xl">
-                    {t("home.heroTitle")}
-                  </h1>
-                </div>
+          
+            <main className="relative flex items-center justify-center h-[calc(100vh-72px)] w-full overflow-hidden">
+  {/* Background video */}
+  <video
+    className="absolute inset-0 w-full h-full object-cover"
+    autoPlay
+    loop
+    muted
+    playsInline
+  >
+    <source src="/images/skyvid.mp4" type="video/mp4" />
+  </video>
 
-                {/* Button at bottom */}
-                <Link
-                  to="/booking"
-                  className="bg-[#a43518] hover:bg-orange-600 hover:scale-110 transition-all duration-300 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider shadow-lg"
-                >
-                  {t("home.bookFlight")}
-                </Link>
-              </div>
-            </main>
+  {/* Optional dark overlay for readability */}
+  <div className="absolute inset-0 bg-black/40"></div>
+
+  {/* Content */}
+  <div className="relative z-10 flex flex-col justify-between items-center w-full h-full text-center py-12">
+    
+    {/* Heading in center */}
+    <div className="flex-1 flex items-center justify-center">
+      <h1 className="text-3xl md:text-5xl font-bold text-white drop-shadow-xl">
+        {t("home.heroTitle")}
+      </h1>
+    </div>
+
+    {/* Button at bottom */}
+    <Link
+      to="/booking"
+      className="bg-[#a43518] hover:bg-orange-600 hover:scale-110 transition-all duration-300 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider shadow-lg"
+    >
+      {t("home.bookFlight")}
+    </Link>
+  </div>
+</main>
+
 
 
                   {/* Our Flights Section - Dynamic */}
