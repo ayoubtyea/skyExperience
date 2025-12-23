@@ -159,7 +159,13 @@ export default function BookingPage() {
   {/* CARDS CONTAINER */}
   <div
     ref={scrollRef}
-    className="flex gap-4 md:gap-8 overflow-x-auto scrollbar-hide px-2 md:px-10 py-6 snap-x snap-mandatory"
+    className="
+    flex gap-6
+    overflow-x-auto
+    snap-x snap-mandatory
+    px-4 py-10
+    scrollbar-hide
+  "
   >
     {flights.map((flight) => {
       const isOpen = openCard === flight._id;
@@ -168,7 +174,7 @@ export default function BookingPage() {
       return (
         <div
   key={flight._id}
-  className="tour-card flex-none w-[85vw] sm:w-[300px] md:w-[360px] snap-center cursor-pointer"
+  className="tour-card snap-center cursor-pointer"
 >
   <div className="card-inner">
     <div className="image-box">
@@ -215,7 +221,7 @@ export default function BookingPage() {
       </div>
     </div>
   </div>
-</div>
+        </div>
 
       );
     })}

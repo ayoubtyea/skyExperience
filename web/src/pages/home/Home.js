@@ -33,7 +33,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cover bg-center bg-fixed">
+      <div className="min-h-screen bg-cover bg-center bg-fixed" >
         <div className="flex items-center justify-center h-screen">
           <div className="text-white text-xl">{t("home.loadingFlights")}</div>
         </div>
