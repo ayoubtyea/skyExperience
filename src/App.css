@@ -1,0 +1,519 @@
+/* Masquer la scrollbar horizontale pour le scroller des flights */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body {
+  font-family: poppins, sans-serif;
+}
+
+/* === About Section Responsive Styles === */
+.about-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+  margin-top: 40px;
+}
+
+.about-text {
+  flex: 1;
+  min-width: 320px;
+}
+
+/* Nouvelle grille d'images pour la section 1 */
+.about-images-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  width: 380px;
+  height: 260px;
+}
+
+.about-img-large {
+  grid-row: 1 / span 2;
+  grid-column: 1 / 2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 24px;
+}
+
+.about-img-small {
+  width: 100%;
+  height: 125px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+/* Grille d'images pour la section 2 */
+.about-images-grid-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 260px;
+  align-items: flex-end;
+}
+
+.about-img-large-2,
+.about-img-small-2 {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 24px;
+}
+
+.about-images {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-images-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about-images-group-bottom {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about-img-vertical {
+  width: 150px;
+  height: 100px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.about-img-horizontal {
+  width: 180px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* Grille d'images pour la section 3 */
+.about-images-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1.2fr 1.2fr;
+  gap: 14px;
+  width: 520px;
+  height: 470px;
+}
+
+.about-img-large-3 {
+  grid-column: 1 / span 2;
+  grid-row: 1 / 2;
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
+  border-radius: 28px 28px 0 0;
+}
+
+.about-img-small-3 {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 0 0 28px 28px;
+}
+
+.about-img-small-3.left {
+  border-radius: 0 0 0 28px;
+}
+
+.about-img-small-3.right {
+  border-radius: 0 0 28px 0;
+}
+
+/* Section relaxation avec fond d'image flou et overlay */
+.about-relax-section {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  min-height: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-top: 60px;
+}
+
+.about-relax-bg {
+  /* background et filter gérés en style inline dans le composant React */
+}
+
+.about-relax-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 44, 44, 0.15);
+  z-index: 2;
+}
+
+.about-relax-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  color: #fff;
+  padding: 200px 20px;
+}
+
+.about-relax-content h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.about-relax-content p {
+  font-size: 1.35rem;
+  margin-bottom: 24px;
+  line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+  .about-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .about-images-grid {
+    width: 100vw;
+    max-width: 380px;
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .about-img-large {
+    height: 180px;
+    min-height: 120px;
+    border-radius: 20px;
+  }
+
+  .about-img-small {
+    height: 90px;
+    min-height: 60px;
+    width: 100vw;
+    max-width: 220px;
+    border-radius: 14px;
+  }
+
+  /* Responsive pour la grille 2 */
+  .about-images-grid-2 {
+    width: 100vw;
+    max-width: 260px;
+    align-items: center;
+  }
+
+  .about-img-large-2,
+  .about-img-small-2 {
+    height: 120px;
+    border-radius: 18px;
+  }
+
+  .about-images {
+    flex-direction: row;
+    min-width: unset;
+    gap: 16px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .about-images-group,
+  .about-images-group-bottom {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 0;
+  }
+
+  .about-img-vertical,
+  .about-img-horizontal {
+    width: 100vw;
+    max-width: 320px;
+    height: auto;
+  }
+
+  .about-images-grid-3 {
+    width: 100vw;
+    max-width: 520px;
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1.2fr 1.2fr;
+    gap: 8px;
+  }
+
+  .about-img-large-3 {
+    height: 170px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .about-img-small-3 {
+    height: 120px;
+    border-radius: 0 0 18px 18px;
+  }
+
+  .about-img-small-3.left {
+    border-radius: 0 0 0 18px;
+  }
+
+  .about-img-small-3.right {
+    border-radius: 0 0 18px 0;
+  }
+}
+
+.card-container {
+  display: flex;
+  gap: 20px;
+  padding: 50px;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+}
+
+
+.image-box {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+/* Dark gradient so white text is readable on the image initially */
+.image-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+  transition: opacity 0.4s ease;
+}
+
+/* --- INFO AREA (Floating Content) --- */
+.info-area {
+  position: absolute;
+  bottom: 25px;
+  left: 20px;
+  right: 20px;
+  z-index: 10; /* Ensures text is always above the white panel */
+  transition: all 0.5s ease;
+}
+
+.text-block h3 { color: white; font-weight: 400; font-size: 16px; margin: 0; transition: color 0.4s; }
+.text-block h3 strong { font-weight: 800; font-size: 20px; }
+
+.footer-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.rating { color: #f39c12; font-weight: bold; font-size: 18px; }
+
+.btn-details {
+  background: #e32626;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* --- HOVER STATE --- */
+.tour-card:hover .white-slide-up {
+  transform: translateY(0); /* Slide up to cover half */
+}
+
+.tour-card:hover .text-block h3, 
+.tour-card:hover .text-block h3 strong {
+  color: #222; /* Text turns dark when background turns white */
+}
+
+.tour-card:hover .image-box::after {
+  opacity: 0; /* Remove dark gradient when white background is present */
+}
+
+/* --- BADGES --- */
+.badge-vip {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+background: #ff5e5e;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 900;
+  font-size: 32px;
+  border-radius: 40% 60% 70% 30% / 50% 40% 60% 50%;
+  z-index: 5;
+}
+
+.style-reserved .flip-card-inner { height: 60px; width: 180px; } /* Slimmer height for pill */
+.style-reserved .flip-card-front,
+.style-reserved .flip-card-back {
+  background: #f39c12;
+  border-radius: 50px;
+  font-size: 18px;
+}
+
+/* --- CARD & LAYOUT --- */
+.card-container {
+  display: flex;
+  gap: 20px;
+  padding: 50px;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.tour-card {
+ width: clamp(260px, 75vw, 380px);
+  height: clamp(400px, 70vh, 500px);
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background: #000;
+  flex-shrink: 0;
+}
+
+/* --- PROFESSIONAL FLIP BADGE --- */
+.badge-flip-wrapper {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 110px;
+  height: 110px;
+  z-index: 20;
+  perspective: 1000px;
+}
+
+.badge-flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+/* TRIGGER FLIP ON CARD HOVER */
+.tour-card:hover .badge-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.badge-front, .badge-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  /* Organic Blob Shape from Picture */
+  background: #ff5e5e;
+  clip-path: url(#blob-shape); /* Optional: use the border-radius below for compatibility */
+  border-radius: 40% 60% 70% 30% / 50% 40% 60% 50%;
+}
+
+.badge-front {
+  font-weight: 900;
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+
+.badge-back {
+  transform: rotateY(180deg);
+}
+
+.price-val { font-size: 24px; font-weight: 800; line-height: 1; }
+.price-sub { font-size: 11px; font-weight: 400; opacity: 0.9; }
+
+/* --- WHITE SLIDE-UP --- */
+/* --- THE WHITE SLIDE PANEL --- */
+
+.white-slide-up {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%;
+  height: 30%;
+  background: white;
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+}
+
+.tour-card:hover .white-slide-up {
+  transform: translateY(0);
+}
+
+/* --- INFO AREA & TEXT COLOR SWAP --- */
+.info-area {
+  position: absolute;
+  bottom: 25px; left: 20px; right: 20px;
+  z-index: 10;
+  transition: all 0.5s ease;
+}
+
+.text-block h3 { color: white; transition: color 0.4s; font-size: 16px; margin: 0; }
+.text-block h3 strong { font-weight: 800; font-size: 20px; }
+
+/* Turn text dark when it lands on the white background */
+.tour-card:hover .text-block h3, 
+.tour-card:hover .text-block h3 strong {
+  color: #222;
+}
+
+.footer-block { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+.rating { color: #f39c12; font-weight: bold; font-size: 18px; }
+
+.btn-details {
+  background: #e32626;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Dark gradient for initial state */
+.image-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+  transition: opacity 0.4s ease;
+}
+.tour-card:hover .image-box::after { opacity: 0; }
+
